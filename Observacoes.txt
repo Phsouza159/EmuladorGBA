@@ -1,0 +1,29 @@
+﻿
+- CARD
+- CPU
+- ADRESS BUS
+- PPU
+- TIMER
+
+
+-- LINK
+https://ax-h.com/software/development/emulation/2017/12/03/emulating-the-gameboy-cpu-on-dot-net.html
+https://www.copetti.org/writings/consoles/game-boy/
+https://gbdev.io/pandocs/
+--- meta
+
+Você pode começar pela CPU. O conjunto de instruções do GameBoy é muito maior que o do chip8, mas alguns são iguais, então você vai ficar bem. Faça isso com muita precisão para que, ao implementar outros componentes, você não precise olhar para trás na CPU para ver o que está errado.
+
+Então você pode implementar o temporizador e a interrupção. Não precisa ser muito preciso, apenas faça funcionar.
+
+Depois disso, você pode começar a implementar a PPU (Unidade de Processamento de Pixels). Escolha um método de renderização: quadro inteiro ou linha de varredura ou FIFO de pixels. Na minha opinião, você deve escolher um renderizador de linha de varredura; ele fica entre o método de quadro inteiro e o método FIFO de pixels, e a maioria dos jogos funciona bem com uma PPU de renderização de linha de varredura. FIFO de pixels é o método mais preciso, mas é bastante difícil de entender como funciona e tem muitas peculiaridades.
+
+Se você não quiser som, pode pular a parte da APU (Unidade de Processamento de Áudio). A APU é bastante difícil de implementar corretamente porque você não consegue ver o que está errado. Mas bem, você não precisa se preocupar com isso antes de implementar os componentes acima.
+
+Então você implementa os MBCs (Controlador de Banco de Memória). MBC é um circuito que fica no cartucho de jogo que controla qual parte dos dados do cartucho o GameBoy pode "ver". Para jogar jogos, você precisa implementar o MBC correspondente. Por exemplo, Super Mario Land requer MBC1; Tetris não requer MBC.
+
+Dicas importantes: você deve usar ROMs de teste para verificar se seu emulador funciona ou não. Confira os cpu_instrs do blargg depois de implementar a CPU. Você também pode usar suítes de teste de CPU como sm83-test-data, isso vai te ajudar muito.
+
+E junte-se ao canal do Discord de Desenvolvimento de Emulação. As pessoas nesse canal são muito gentis e podem te ajudar quando você ficar preso em algum lugar. E é muito divertido! Você pode ir por aí, bater um papo com os caras que também fazem emuladores e até contar em binário!
+
+Acho que é tudo o que você precisa saber se você está começando a fazer um emulador de GB. Desculpe pelo meu inglês ruim se você tiver problemas para ler meu comentário. Divirta-se fazendo o emulador!
