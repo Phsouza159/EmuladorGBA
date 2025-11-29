@@ -13,8 +13,8 @@ namespace EmuladorGBA
     {
         public Game()
         {
+            this.Cpu = new Cpu();
             this.StartMemomy();
-           
         }
 
         private void StartMemomy()
@@ -29,6 +29,8 @@ namespace EmuladorGBA
 
         private RamMemory Memory { get; set; }
 
+        private Cpu Cpu { get; set; }
+
         public Card Card { get; set; }
 
         public string Title { get; set; }
@@ -36,6 +38,16 @@ namespace EmuladorGBA
         public void LoadHead()
         {
             this.Card.LoadHead();
+        }
+
+        public void ShowHeadValues()
+        {
+            this.Card.ShowHeadValues();
+        }
+
+        internal void Start()
+        {
+            this.Cpu.Init();
         }
     }
 }

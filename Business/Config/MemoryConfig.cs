@@ -70,8 +70,6 @@ namespace EmuladorGBA.Business.Config
 
         public static decimal MEMORY_CARTRIDGE_TYPE_INIT = 0x147;
 
-        public static decimal MEMORY_CARTRIDGE_TYPE_END = 0x148;
-
         #endregion
 
         #region ROM SIZE
@@ -89,6 +87,12 @@ namespace EmuladorGBA.Business.Config
         #region DESTINATION CODE
 
         public static decimal MEMORY_DESTINAITON_INIT = 0x14A;
+
+        #endregion
+
+        #region ROM VERSION
+
+        public static decimal MEMORY_ROM_VERSION_INIT = 0x14C;
 
         #endregion
 

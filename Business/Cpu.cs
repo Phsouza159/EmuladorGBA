@@ -17,7 +17,16 @@ namespace EmuladorGBA.Business
 
         public const short ResolutionHeight = 144;
 
+        internal int chuck = 0;
 
+        internal void Init()
+        {
+            while(true)
+            {
+                Thread.Sleep(2000);
 
+                this.chuck += 1;
+            }
+        }
     }
 }

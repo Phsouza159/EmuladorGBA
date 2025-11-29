@@ -12,7 +12,10 @@ var card = game.Card;
 
 card.SetPathRom(pathRom);
 card.SetTypeRom(TypeRom.PATH);
-
 card.LoadRom();
 
 game.LoadHead();
+game.ShowHeadValues();
+
+
+game.Start();

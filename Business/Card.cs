@@ -1,5 +1,7 @@
 ﻿using EmuladorGBA.Business.Config;
 using EmuladorGBA.Business.Enum;
+using EmuladorGBA.Business.Extensions;
+using EmuladorGBA.Business.Types;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -73,11 +75,13 @@ namespace EmuladorGBA.Business
 
         private byte[] SGB_Flag { get; set; }
 
-        private byte[] CartridgeType { get; set; }
+        private byte CartridgeType { get; set; }
 
         private byte RomSize { get; set; }
 
         private byte RamSize { get; set; }
+
+        private byte RomVersion { get; set; }
 
         private byte DestinationCode { get; set; }
 
@@ -100,6 +104,7 @@ namespace EmuladorGBA.Business
             this.LoadRomSize();
             this.LoadRamSize();
             this.LoadDestinationCode();
+            this.LoadRomVersion();
 
             byte checksum = 0;
             byte checkValue = this.RomData[MemoryConfig.MEMORY_CHECK_VALUE];
@@ -148,7 +153,7 @@ namespace EmuladorGBA.Business
 
         public void LoadCartridgeType()
         {
-            this.CartridgeType = this.LoadData(MemoryConfig.MEMORY_CARTRIDGE_TYPE_INIT, MemoryConfig.MEMORY_CARTRIDGE_TYPE_END);
+            this.CartridgeType = this.LoadData(MemoryConfig.MEMORY_CARTRIDGE_TYPE_INIT);
         }
 
         public void LoadRomSize()
@@ -165,6 +170,12 @@ namespace EmuladorGBA.Business
         {
             this.DestinationCode = this.LoadData(MemoryConfig.MEMORY_DESTINAITON_INIT);
         }
+
+        private void LoadRomVersion()
+        {
+            this.RomVersion = this.LoadData(MemoryConfig.MEMORY_ROM_VERSION_INIT);
+        }
+
 
         private byte LoadData(decimal init)
         {
@@ -186,6 +197,19 @@ namespace EmuladorGBA.Business
             return data;
         }
 
+
+
         #endregion
+
+        internal void ShowHeadValues()
+        {
+            Console.WriteLine($"Cartridge Loaded");
+            Console.WriteLine($"Title       : {this.Title.ToValueString()}");
+            Console.WriteLine($"Type        : {CartridgeTypeKeys.Values.GetValueOrDefault(this.CartridgeType)}");
+            Console.WriteLine($"ROM Size    : {ROM_Size.Values.GetValueOrDefault(this.RomSize)}");
+            Console.WriteLine($"RAM Size    : {RAM_SizeKeys.Values.GetValueOrDefault(this.RamSize)}");
+            Console.WriteLine($"LIC Code    : {LicenseeCodesKeys.Values.GetValueOrDefault(this.LicenseeCode)}");
+            Console.WriteLine($"ROM Vers    : {(Decimal)this.RomVersion}");
+        }
     }
 }
