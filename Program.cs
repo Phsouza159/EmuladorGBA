@@ -4,7 +4,7 @@ using EmuladorGBA;
 using EmuladorGBA.Business;
 using EmuladorGBA.Business.Enum;
 
-const string pathRom = @"C:\\Users\\paulo\\Downloads\\Pokemon - Silver Version (USA, Europe) (SGB Enhanced) (GB Compatible).gbc";
+const string pathRom = @"C:\Users\paulo\Source\Repos\Phsouza159\EmuladorGBA\Roms\cpu_instrs.gb";
 
 Game game = new Game();
 game.Card = new Card();

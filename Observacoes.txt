@@ -10,6 +10,8 @@
 https://ax-h.com/software/development/emulation/2017/12/03/emulating-the-gameboy-cpu-on-dot-net.html
 https://www.copetti.org/writings/consoles/game-boy/
 https://gbdev.io/pandocs/
+https://github.com/rockytriton/LLD_gbemu
+
 --- meta
 
 Você pode começar pela CPU. O conjunto de instruções do GameBoy é muito maior que o do chip8, mas alguns são iguais, então você vai ficar bem. Faça isso com muita precisão para que, ao implementar outros componentes, você não precise olhar para trás na CPU para ver o que está errado.

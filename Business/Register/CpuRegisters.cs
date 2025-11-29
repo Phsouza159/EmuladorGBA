@@ -20,7 +20,5 @@ namespace EmuladorGBA.Business.Register
 
         public byte H, L; // HL
 
-
-
     }
 }

@@ -1,5 +1,6 @@
 ﻿using EmuladorGBA.Business;
 using EmuladorGBA.Business.Config;
+using EmuladorGBA.Business.Enum;
 using EmuladorGBA.Business.Memory;
 using System;
 using System.Collections.Generic;
@@ -33,7 +34,9 @@ namespace EmuladorGBA
 
         public Card Card { get; set; }
 
-        public string Title { get; set; }
+        public bool Running { get; private set; }
+        public bool Paused { get; private set; }
+        public int Tickets { get; private set; }
 
         public void LoadHead()
         {
@@ -47,7 +50,36 @@ namespace EmuladorGBA
 
         internal void Start()
         {
-            this.Cpu.Init();
+            this.Running = true;
+            this.Paused = false;
+            this.Tickets = 0;
+
+            while (this.Running)
+            {
+                if(this.Paused)
+                {
+                    Thread.Sleep(1000);
+                    continue;
+                }
+
+                if(!this.Cpu.Step())
+                {
+                    this.Exit(TypeExit.STOPED);
+                }
+
+                this.Tickets += 1;
+
+                //TODO...
+                Thread.Sleep(1000);
+                Console.WriteLine($"Chuck: {this.Tickets}");
+            }
+        }
+
+        private void Exit(TypeExit type)
+        {
+            //TODO...
+            Console.WriteLine($"EXIT CODE {(short)type} - {type}");
+            throw new ArgumentException("EXIT");
         }
     }
 }
