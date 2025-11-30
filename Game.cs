@@ -1,7 +1,9 @@
 ﻿using EmuladorGBA.Business;
 using EmuladorGBA.Business.Config;
 using EmuladorGBA.Business.Enum;
+using EmuladorGBA.Business.Interface;
 using EmuladorGBA.Business.Memory;
+using EmuladorGBA.Business.Process;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +16,10 @@ namespace EmuladorGBA
     {
         public Game()
         {
-            this.Cpu = new Cpu();
+            this.Card = new Card();
+            this.Bus = new Bus(this.Card);
+            this.Cpu = new Cpu(this.Bus);
+
             this.StartMemomy();
         }
 
@@ -32,11 +37,22 @@ namespace EmuladorGBA
 
         private Cpu Cpu { get; set; }
 
-        public Card Card { get; set; }
+        private Card Card { get; set; }
+
+        private IBus Bus { get; set; }
 
         public bool Running { get; private set; }
         public bool Paused { get; private set; }
-        public int Tickets { get; private set; }
+
+        internal void LoadRomFromPath(string pathRom)
+        {
+            this.Card.SetPathRom(pathRom);
+            this.Card.SetTypeRom(TypeRom.PATH);
+            this.Card.LoadRom();
+
+            this.LoadHead();
+            this.ShowHeadValues();
+        }
 
         public void LoadHead()
         {
@@ -52,7 +68,6 @@ namespace EmuladorGBA
         {
             this.Running = true;
             this.Paused = false;
-            this.Tickets = 0;
 
             while (this.Running)
             {
@@ -62,16 +77,15 @@ namespace EmuladorGBA
                     continue;
                 }
 
-                if(!this.Cpu.Step())
+                if (!this.Cpu.Step())
                 {
                     this.Exit(TypeExit.STOPED);
                 }
 
-                this.Tickets += 1;
+                this.Cpu.Tickets += 1;
 
                 //TODO...
                 Thread.Sleep(1000);
-                Console.WriteLine($"Chuck: {this.Tickets}");
             }
         }
 
@@ -81,5 +95,7 @@ namespace EmuladorGBA
             Console.WriteLine($"EXIT CODE {(short)type} - {type}");
             throw new ArgumentException("EXIT");
         }
+
+    
     }
 }

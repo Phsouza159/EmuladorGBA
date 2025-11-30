@@ -1,0 +1,93 @@
+﻿using EmuladorGBA.Business.Enum;
+using EmuladorGBA.Business.Extensions;
+using EmuladorGBA.Business.Interface;
+using EmuladorGBA.Business.Intruction;
+using EmuladorGBA.Business.Process.Load;
+using EmuladorGBA.Business.Register;
+
+namespace EmuladorGBA.Business.Process
+{
+    internal partial class Cpu : CpuProcesses
+    {
+        public Cpu(IBus bus)
+        {
+            this.CpuRegisters = new CpuRegisters();
+            this.Bus = bus;
+
+            // CONFIG INIT
+            this.CpuRegisters.SetRegisterPC(0x100);
+            this.CpuRegisters.SetRegisterA(0x01);
+
+            this.LoadInstruction();
+            this.LoadProcess();
+        }
+
+        internal IBus Bus { get; }
+
+        #region DATA VALUES
+
+        internal const short ResolutionWeidth = 160;
+
+        internal const short ResolutionHeight = 144;
+
+        internal CpuInstruction[] CpuInstructions { get;  set; }
+
+        internal byte CpuOpeCode { get; set; }
+
+        internal ushort MemoryAdressDest { get; set; }
+
+        internal bool DestIsMemory { get; set; }
+
+        internal bool Halted;
+
+        internal bool Stepping;
+
+        public int Tickets = 0;
+
+        #endregion
+
+        #region LOAD INSTRUCTION / PROCESS
+
+        protected void LoadInstruction() => InstructionsLoad.Load(this);
+
+        protected void LoadProcess() => ProcessorsLoad.Load(this);
+
+        protected void LoadLoockUp()
+        {
+            //TODO..
+        }
+
+        #endregion
+
+        #region STEP
+
+        internal bool Step()
+        {
+            if (!this.Halted)
+            {
+                ushort pc = this.CpuRegisters.PC;
+
+                this.FetchInstruction();
+                this.FecthData();
+
+                Console.WriteLine(
+                    $"Ticekt {this.Tickets} | PC {pc:X4}: {this.InstName(this.Instruction.Type),-7} " +
+                    $"({this.CpuOpeCode:X2} {this.Bus.Read((ushort)(pc + 1)):X2} {this.Bus.Read((ushort)(pc + 2)):X2}) " +
+                    $"A: {this.CpuRegisters.A:X2} B: {this.CpuRegisters.B:X2} C: {this.CpuRegisters.C:X2}"
+                );
+
+
+                if (this.Instruction.IsEmpty())
+                {
+                    throw new ArgumentException($"Instrução não suportada em: {this.CpuOpeCode:X2}");
+                }
+
+                this.Execute();
+            }
+
+            return true;
+        }
+
+        #endregion
+    }
+}

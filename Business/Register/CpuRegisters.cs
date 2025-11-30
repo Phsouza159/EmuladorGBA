@@ -8,17 +8,31 @@ namespace EmuladorGBA.Business.Register
 {
     public struct CpuRegisters
     {
-        public ushort PC { get; set; }
+        internal ushort PC { get; set; }
 
-        public ushort SP { get; set; }
+        internal ushort SP { get; set; }
 
-        public byte A, F; // AF
-        
-        public byte B, C; // BC
-        
-        public byte D, E; // DE
+        internal byte A, F; // AF
 
-        public byte H, L; // HL
+        internal byte B, C; // BC
 
+        internal byte D, E; // DE
+
+        internal byte H, L; // HL
+
+        internal void SetRegisterA(byte value)
+        {
+            this.A = value;
+        }
+
+        internal void SetRegisterPC(ushort value)
+        {
+            this.PC = value;
+        }
+
+        internal void IncrementPC()
+        {
+            this.PC += 1;
+        }
     }
 }

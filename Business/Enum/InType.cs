@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,55 +9,102 @@ namespace EmuladorGBA.Business.Enum
 {
     internal enum InType
     {
+        [Description("NONE")]
         IN_NONE,
+        [Description("NOP")]
         IN_NOP,
+        [Description("LD")]
         IN_LD,
+        [Description("IN_INC")]
         IN_INC,
+        [Description("DEC")]
         IN_DEC,
+        [Description("RLCA")]
         IN_RLCA,
+        [Description("ADD")]
         IN_ADD,
+        [Description("RRCA")]
         IN_RRCA,
+        [Description("STOP")]
         IN_STOP,
+        [Description("RLA")]
         IN_RLA,
+        [Description("JR")]
         IN_JR,
+        [Description("RRA")]
         IN_RRA,
+        [Description("DAA")]
         IN_DAA,
+        [Description("CPL")]
         IN_CPL,
+        [Description("SCF")]
         IN_SCF,
+        [Description("CCF")]
         IN_CCF,
+        [Description("HALT")]
         IN_HALT,
+        [Description("ADC")]
         IN_ADC,
+        [Description("SUB")]
         IN_SUB,
+        [Description("SBC")]
         IN_SBC,
+        [Description("AND")]
         IN_AND,
+        [Description("XOR")]
         IN_XOR,
+        [Description("OR")]
         IN_OR,
+        [Description("CP")]
         IN_CP,
+        [Description("POP")]
         IN_POP,
+        [Description("JP")]
         IN_JP,
+        [Description("PUSH")]
         IN_PUSH,
+        [Description("RET")]
         IN_RET,
+        [Description("CB")]
         IN_CB,
+        [Description("CALL")]
         IN_CALL,
+        [Description("RETI")]
         IN_RETI,
+        [Description("LDH")]
         IN_LDH,
+        [Description("JPHL")]
         IN_JPHL,
+        [Description("DI")]
         IN_DI,
+        [Description("EI")]
         IN_EI,
+        [Description("RST")]
         IN_RST,
+        [Description("ERR")]
         IN_ERR,
         // CB instructions...
+        [Description("RLC")]
         IN_RLC,
+        [Description("RRC")]
         IN_RRC,
+        [Description("RL")]
         IN_RL,
+        [Description("RR")]
         IN_RR,
+        [Description("SLA")]
         IN_SLA,
+        [Description("SRA")]
         IN_SRA,
+        [Description("SWAP")]
         IN_SWAP,
+        [Description("SRL")]
         IN_SRL,
+        [Description("BIT")]
         IN_BIT,
+        [Description("RES")]
         IN_RES,
+        [Description("SET")]
         IN_SET
-
     }
 }

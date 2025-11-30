@@ -1,21 +1,16 @@
 ﻿
 
 using EmuladorGBA;
-using EmuladorGBA.Business;
-using EmuladorGBA.Business.Enum;
 
-const string pathRom = @"C:\Users\paulo\Source\Repos\Phsouza159\EmuladorGBA\Roms\cpu_instrs.gb";
-
-Game game = new Game();
-game.Card = new Card();
-var card = game.Card;
-
-card.SetPathRom(pathRom);
-card.SetTypeRom(TypeRom.PATH);
-card.LoadRom();
-
-game.LoadHead();
-game.ShowHeadValues();
-
-
-game.Start();
+const string pathRom = @"C:\_git\EmuladorGBA\Roms\tetris.gb";
+try
+{
+    Game game = new();
+    game.LoadRomFromPath(pathRom);
+    game.Start();
+}
+catch (Exception ex)
+{
+    Console.WriteLine(string.Empty);
+    Console.WriteLine(ex.Message);
+}

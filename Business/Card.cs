@@ -1,16 +1,12 @@
 ﻿using EmuladorGBA.Business.Config;
 using EmuladorGBA.Business.Enum;
 using EmuladorGBA.Business.Extensions;
+using EmuladorGBA.Business.Interface;
 using EmuladorGBA.Business.Types;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EmuladorGBA.Business
 {
-    public class Card
+    public class Card : ICart
     {
         public TypeRom TypeRom { get; private set; }
 
@@ -31,7 +27,6 @@ namespace EmuladorGBA.Business
         }
 
         #endregion
-
 
         #region LOAD ROM
 
@@ -211,5 +206,20 @@ namespace EmuladorGBA.Business
             Console.WriteLine($"LIC Code    : {LicenseeCodesKeys.Values.GetValueOrDefault(this.LicenseeCode)}");
             Console.WriteLine($"ROM Vers    : {(Decimal)this.RomVersion}");
         }
+
+        #region READ / WRITE VALUE
+
+        public byte Read(ushort adress)
+        {
+            //Console.WriteLine($"Leitura ROM in {adress:X4}");
+            return this.RomData[adress];
+        }
+
+        public void Write(ushort adress, byte value)
+        {
+            Console.WriteLine("Sem implementacao para WRITE");
+        }
+
+        #endregion
     }
 }
