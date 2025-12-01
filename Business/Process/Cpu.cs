@@ -50,7 +50,9 @@ namespace EmuladorGBA.Business.Process
                 Console.WriteLine(
                     $"Ticekt {this.Tickets} | PC {pc:X4}: {this.InstName(this.Instruction.Type),-7} " +
                     $"({this.CpuOpeCode:X2} {this.Bus.Read((ushort)(pc + 1)):X2} {this.Bus.Read((ushort)(pc + 2)):X2}) " +
-                    $"A: {this.CpuRegisters.A:X2} B: {this.CpuRegisters.B:X2} C: {this.CpuRegisters.C:X2}"
+                    $"A: {this.CpuRegisters.A:X2} BC: {this.CpuRegisters.B:X2}{this.CpuRegisters.C:X2} " +
+                    $"DE: {this.CpuRegisters.D:X2}{this.CpuRegisters.E:X2} " +
+                    $"HL: {this.CpuRegisters.H:X2}{this.CpuRegisters.L:X2} " 
                 );
 
 

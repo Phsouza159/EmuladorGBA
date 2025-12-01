@@ -8,7 +8,9 @@ namespace EmuladorGBA.Business.Config
 {
     internal static class MemoryConfig
     {
-        public static short MEMORY_LENGTH = 32000;
+        public static short MEMORY_WRAM_LENGTH = 0x2000;
+
+        public static short MEMORY_HRAM_LENGTH = 0x80;
 
         #region ENTRY POINT
 

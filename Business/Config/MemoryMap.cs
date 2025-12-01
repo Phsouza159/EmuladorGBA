@@ -8,6 +8,8 @@ namespace EmuladorGBA.Business.Config
 {
     public struct MemoryMap
     {
-        public int Length { get; set; }
+        public int WRAM_Length { get; set; }
+
+        public short HRAM_Length { get; set; }
     }
 }

@@ -68,6 +68,8 @@ namespace EmuladorGBA.Business.Process
 
         internal static void CpuWriteRegister(this Cpu cpu, RegType rt, ushort value)
         {
+            ushort reversed = Reverse(cpu, value);
+
             switch (rt)
             {
                 case RegType.RT_A:  cpu.CpuRegisters.SetRegisterA((byte)(value & 0xFF)); break;
@@ -79,10 +81,29 @@ namespace EmuladorGBA.Business.Process
                 case RegType.RT_H:  cpu.CpuRegisters.SetRegisterH((byte)(value & 0xFF)); break;
                 case RegType.RT_L:  cpu.CpuRegisters.SetRegisterL((byte)(value & 0xFF)); break;
 
-                case RegType.RT_AF: cpu.CpuRegisters.SetRegisterA((byte)(Reverse(cpu, value))); break;
-                case RegType.RT_BC: cpu.CpuRegisters.SetRegisterB((byte)(Reverse(cpu, value))); break;
-                case RegType.RT_DE: cpu.CpuRegisters.SetRegisterD((byte)(Reverse(cpu, value))); break;
-                case RegType.RT_HL: cpu.CpuRegisters.SetRegisterH((byte)(Reverse(cpu, value))); break;
+                // case RegType.RT_AF: cpu.CpuRegisters.SetRegisterA((byte)(Reverse(cpu, value))); break;
+                case RegType.RT_AF:
+                    cpu.CpuRegisters.F = (byte)(reversed >> 8);
+                    cpu.CpuRegisters.A = (byte)(reversed & 0xFF);
+                    break;
+
+                //case RegType.RT_BC: cpu.CpuRegisters.SetRegisterB((byte)(Reverse(cpu, value))); break;
+                case RegType.RT_BC:
+                    cpu.CpuRegisters.C = (byte)(reversed >> 8);
+                    cpu.CpuRegisters.B = (byte)(reversed & 0xFF);
+                    break;
+
+                //case RegType.RT_DE: cpu.CpuRegisters.SetRegisterD((byte)(Reverse(cpu, value))); break;
+                case RegType.RT_DE:
+                    cpu.CpuRegisters.E = (byte)(reversed >> 8);
+                    cpu.CpuRegisters.D = (byte)(reversed & 0xFF);
+                    break;
+
+                //case RegType.RT_HL: cpu.CpuRegisters.SetRegisterH((byte)(Reverse(cpu, value))); break;
+                case RegType.RT_HL:
+                    cpu.CpuRegisters.L = (byte)(reversed >> 8);
+                    cpu.CpuRegisters.H = (byte)(reversed & 0xFF);
+                    break;
 
                 case RegType.RT_SP: cpu.CpuRegisters.SetRegisterSP(value); break;
                 case RegType.RT_PC: cpu.CpuRegisters.SetRegisterPC(value); break;

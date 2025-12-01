@@ -1,11 +1,12 @@
 ﻿using EmuladorGBA.Business.Interface;
+using EmuladorGBA.Business.Memory;
+using EmuladorGBA.Business.Util;
 using System.Net;
 
 namespace EmuladorGBA.Business
 {
     internal class Bus : IBus
     {
-
         // 0x0000 - 0x3FFF : ROM Bank 0
         // 0x4000 - 0x7FFF : ROM Bank 1 - Switchable
         // 0x8000 - 0x97FF : CHR RAM
@@ -20,12 +21,15 @@ namespace EmuladorGBA.Business
         // 0xFF00 - 0xFF7F : I/O Registers
         // 0xFF80 - 0xFFFE : Zero Page
 
-        public Bus(ICart Cart)
+        public Bus(ICart Cart, IRamMemory ramMemory)
         {
             this.Cart = Cart;
+            this.Memory = ramMemory;
         }
 
         private ICart Cart { get; set; }
+
+        private IRamMemory Memory { get; set; }
 
         public byte Read(ushort address)
         {
@@ -33,10 +37,58 @@ namespace EmuladorGBA.Business
             {
                 //ROM Data
                 return this.Cart.Read(address);
+            } 
+            else if (address < 0xA000)
+            {
+                // CHAR/MAP DATA 
+                // TODO
+                ConsoleUtil.ShowMensagemNotImplement();
+                Console.WriteLine($"Sem suporte para leitura em {address:4X}");
+            }
+            else if (address < 0xC000)
+            {
+                // Cartridge RAM
+                return this.Cart.Read(address);
+            }
+            else if (address < 0xE000)
+            {
+                // WRAM
+                return this.Memory.ReadMemoryWRam(address);
+            }
+            else if (address < 0xFE00)
+            {
+                // RESERVED
+                return 0;
+            }
+            else if (address < 0xFEA0)
+            {
+                // Object Attribute Memory
+                // TODO
+                ConsoleUtil.ShowMensagemNotImplement();
+                Console.WriteLine($"Sem suporte para leitura em {address:4X}");
+
+            }
+            else if (address < 0xFF00)
+            {
+                // RESERVED
+                return 0;
+            }
+            else if (address < 0xFE80)
+            {
+                // IO Registers
+                // TODO
+                ConsoleUtil.ShowMensagemNotImplement();
+                Console.WriteLine($"Sem suporte para leitura em {address:4X}");
+            }
+            else if (address == 0xFFFF)
+            {
+                // CPU REGISTERS
+                // TODO
+                ConsoleUtil.ShowMensagemNotImplement();
+                Console.WriteLine($"Sem suporte para leitura em {address:4X}"); 
             }
 
-            Console.WriteLine($"Sem suporte para leitura em {address:4X}");
-            return 0;
+            return this.Memory.ReadMemoryHRam(address);
         }
 
         public ushort ReadB16(ushort address)
@@ -49,9 +101,63 @@ namespace EmuladorGBA.Business
 
         public void Write(ushort address, byte value)
         {
-             this.Cart.Write(address, value);
 
-            Console.WriteLine($"Sem implementacao para WRITE em {address:X2} : Value {value:X4}");
+            if (address < 0x8000)
+            {
+                //ROM Data
+                this.Cart.Write(address, value);
+            }
+            else if (address < 0xA000)
+            {
+                // CHAR/MAP DATA 
+                // TODO
+                ConsoleUtil.ShowMensagemNotImplement();
+                Console.WriteLine($"Sem suporte para WRITE em {address:4X}");
+            }
+            else if (address < 0xC000)
+            {
+                // Cartridge EXTRA RAM
+                this.Cart.Write(address, value);
+            }
+            else if (address < 0xE000)
+            {
+                // WRAM
+                this.Memory.WriteMemoryWRam(address, value);
+            }
+            else if (address < 0xFE00)
+            {
+                // RESERVED
+            }
+            else if (address < 0xFEA0)
+            {
+                // Object Attribute Memory
+                // TODO
+                ConsoleUtil.ShowMensagemNotImplement();
+                Console.WriteLine($"Sem suporte para WRITE em {address:4X}");
+
+            }
+            else if (address < 0xFF00)
+            {
+                // RESERVED
+            }
+            else if (address < 0xFE80)
+            {
+                // IO Registers
+                // TODO
+                ConsoleUtil.ShowMensagemNotImplement();
+                Console.WriteLine($"Sem suporte para WRITE em {address:4X}");
+            }
+            else if (address == 0xFFFF)
+            {
+                // CPU REGISTERS
+                // TODO
+                ConsoleUtil.ShowMensagemNotImplement();
+                Console.WriteLine($"Sem suporte para WRITE em {address:4X}");
+            }
+            else
+            {
+                this.Memory.WriteMemoryHRam(address, value);
+            }
         }
 
         public void WriteB16(ushort address, ushort value)

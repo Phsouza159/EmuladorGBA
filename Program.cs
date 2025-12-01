@@ -2,7 +2,7 @@
 
 using EmuladorGBA;
 
-const string pathRom = @"C:\_git\EmuladorGBA\Roms\mem_timing.gb";
+const string pathRom = @"C:\_git\EmuladorGBA\Roms\cpu_instrs.gb";
 try
 {
     Game game = new();

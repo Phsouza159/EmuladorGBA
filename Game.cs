@@ -16,24 +16,16 @@ namespace EmuladorGBA
     {
         public Game()
         {
-            this.Card = new Card();
-            this.Bus = new Bus(this.Card);
-            this.Cpu = new Cpu(this.Bus);
-
-            this.StartMemomy();
-        }
-
-        private void StartMemomy()
-        {
             MemoryMap memoryMap = new MemoryMap
             {
-                Length = MemoryConfig.MEMORY_LENGTH
+                WRAM_Length = MemoryConfig.MEMORY_WRAM_LENGTH,
+                HRAM_Length = MemoryConfig.MEMORY_HRAM_LENGTH
             };
 
-            this.Memory = new RamMemory(memoryMap);
+            this.Card = new Card();
+            this.Bus = new Bus(this.Card, new RamMemory(memoryMap));
+            this.Cpu = new Cpu(this.Bus);
         }
-
-        private RamMemory Memory { get; set; }
 
         private Cpu Cpu { get; set; }
 
@@ -73,7 +65,7 @@ namespace EmuladorGBA
             {
                 if(this.Paused)
                 {
-                    Thread.Sleep(1000);
+                    Thread.Sleep(500);
                     continue;
                 }
 
@@ -85,7 +77,7 @@ namespace EmuladorGBA
                 this.Cpu.Tickets += 1;
 
                 //TODO...
-                Thread.Sleep(1000);
+                Thread.Sleep(500);
             }
         }
 
