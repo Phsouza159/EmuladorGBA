@@ -9,7 +9,7 @@ namespace EmuladorGBA.Business.Enum
 {
     internal enum InType
     {
-        [Description("NONE")]
+        [Description("<NONE>")]
         IN_NONE,
         [Description("NOP")]
         IN_NOP,
