@@ -35,7 +35,10 @@ namespace EmuladorGBA.Business.Register
         internal void SetRegisterPC(ushort value) => this.PC = value;
         internal void SetRegisterSP(ushort value) => this.SP = value;
 
-
         internal void IncrementPC() => this.PC += 1;
+        internal void DescrementPC() => this.PC -= 1;
+
+        internal void IncrementSP() => this.SP += 1;
+        internal void DescrementSP() => this.SP -= 1;
     }
 }

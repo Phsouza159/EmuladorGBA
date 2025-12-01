@@ -37,7 +37,10 @@ namespace EmuladorGBA.Business.Process
 
         internal static ushort Reverse(this Cpu cpu, ushort n)
         {
-            return (ushort)(((n & 0xFF00) >> 8) | ((n & 0x00FF) << 8));
+            // TODO... ERRO NO REVERSE
+            //return (ushort)(((n & 0xFF00) >> 8) | ((n & 0x00FF) << 8));
+
+            return n;
         }
 
         internal static ushort CpuReadRegister(this Cpu cpu, RegType rt)
@@ -57,7 +60,6 @@ namespace EmuladorGBA.Business.Process
                 case RegType.RT_BC: return cpu.Reverse((ushort)((cpu.CpuRegisters.B << 8) | cpu.CpuRegisters.C));
                 case RegType.RT_DE: return cpu.Reverse((ushort)((cpu.CpuRegisters.D << 8) | cpu.CpuRegisters.E));
                 case RegType.RT_HL: return cpu.Reverse((ushort)((cpu.CpuRegisters.H << 8) | cpu.CpuRegisters.L));
-
                 case RegType.RT_PC: return cpu.CpuRegisters.PC;
                 case RegType.RT_SP: return cpu.CpuRegisters.SP;
                 case RegType.RT_NONE:
@@ -68,8 +70,6 @@ namespace EmuladorGBA.Business.Process
 
         internal static void CpuWriteRegister(this Cpu cpu, RegType rt, ushort value)
         {
-            ushort reversed = Reverse(cpu, value);
-
             switch (rt)
             {
                 case RegType.RT_A:  cpu.CpuRegisters.SetRegisterA((byte)(value & 0xFF)); break;
@@ -81,28 +81,37 @@ namespace EmuladorGBA.Business.Process
                 case RegType.RT_H:  cpu.CpuRegisters.SetRegisterH((byte)(value & 0xFF)); break;
                 case RegType.RT_L:  cpu.CpuRegisters.SetRegisterL((byte)(value & 0xFF)); break;
 
-                // case RegType.RT_AF: cpu.CpuRegisters.SetRegisterA((byte)(Reverse(cpu, value))); break;
                 case RegType.RT_AF:
-                    cpu.CpuRegisters.F = (byte)(reversed >> 8);
-                    cpu.CpuRegisters.A = (byte)(reversed & 0xFF);
+                    {
+                        ushort af = cpu.Reverse(value);           // reverse
+                        cpu.CpuRegisters.A = (byte)(af >> 8);     // High byte
+                        cpu.CpuRegisters.F = (byte)(af & 0xFF);   // Low byte
+                    }
                     break;
 
-                //case RegType.RT_BC: cpu.CpuRegisters.SetRegisterB((byte)(Reverse(cpu, value))); break;
                 case RegType.RT_BC:
-                    cpu.CpuRegisters.C = (byte)(reversed >> 8);
-                    cpu.CpuRegisters.B = (byte)(reversed & 0xFF);
+                    {
+                        ushort bc = cpu.Reverse(value);           // reverse
+                        cpu.CpuRegisters.B = (byte)(bc >> 8);     // High byte
+                        cpu.CpuRegisters.C = (byte)(bc & 0xFF);   // Low byte
+                    }
                     break;
 
-                //case RegType.RT_DE: cpu.CpuRegisters.SetRegisterD((byte)(Reverse(cpu, value))); break;
                 case RegType.RT_DE:
-                    cpu.CpuRegisters.E = (byte)(reversed >> 8);
-                    cpu.CpuRegisters.D = (byte)(reversed & 0xFF);
+                    {
+                        ushort de = cpu.Reverse(value);           // reverse
+                        cpu.CpuRegisters.D = (byte)(de >> 8);     // High byte
+                        cpu.CpuRegisters.E = (byte)(de & 0xFF);   // Low byte
+                    }
                     break;
 
-                //case RegType.RT_HL: cpu.CpuRegisters.SetRegisterH((byte)(Reverse(cpu, value))); break;
                 case RegType.RT_HL:
-                    cpu.CpuRegisters.L = (byte)(reversed >> 8);
-                    cpu.CpuRegisters.H = (byte)(reversed & 0xFF);
+                    {
+                        ushort r = cpu.Reverse(value);           // reverse
+                        cpu.CpuRegisters.H = (byte)(r >> 8);     // High byte
+                        cpu.CpuRegisters.L = (byte)(r & 0xFF);   // Low byte
+                    }
+                  
                     break;
 
                 case RegType.RT_SP: cpu.CpuRegisters.SetRegisterSP(value); break;

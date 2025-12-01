@@ -11,14 +11,15 @@ namespace EmuladorGBA.Business.Memory
     public class RamMemory : IRamMemory
     {
         private byte[] HRAM { get; set; }
-
         private byte[] WRAM { get; set; }
 
+        private MemoryMap MemoryMap;
 
         public RamMemory(MemoryMap memoryMap)
         {
             this.WRAM = new byte[memoryMap.WRAM_Length];
             this.HRAM = new byte[memoryMap.HRAM_Length];
+            this.MemoryMap = memoryMap;
         }
 
         #region READ
@@ -27,7 +28,7 @@ namespace EmuladorGBA.Business.Memory
         {
             address -= 0xC000;
 
-            if ((int)address > WRAM.Length)
+            if ((int)address > this.MemoryMap.WRAM_Length)
             {
                 Console.WriteLine($"Registro WRITE WRAM Fora do registro: {address:X2}");
                 return 0;
@@ -38,9 +39,9 @@ namespace EmuladorGBA.Business.Memory
 
         public byte ReadMemoryHRam(ushort address)
         {
-            address -= 0xC000;
+            address -= 0xFF80;
 
-            if ((int)address > HRAM.Length)
+            if ((int)address > this.MemoryMap.HRAM_Length)
             {
                 Console.WriteLine($"Registro WRITE HRAM Fora do registro: {address:X2}");
                 return 0;
@@ -58,7 +59,7 @@ namespace EmuladorGBA.Business.Memory
         {
             address -= 0xC000;
 
-            if ((int)address > WRAM.Length)
+            if ((int)address > this.MemoryMap.WRAM_Length)
             {
                 Console.WriteLine($"Registro WRITE WRAM Fora do registro: {address:X2}");
                 return;
@@ -69,7 +70,9 @@ namespace EmuladorGBA.Business.Memory
 
         public void WriteMemoryHRam(ushort address, byte value)
         {
-            if ((int)address > HRAM.Length)
+            address -= 0xFF80;
+
+            if ((int)address > this.MemoryMap.HRAM_Length)
             {
                 Console.WriteLine($"Registro WRITE WRAM Fora do registro: {address:X2}");
                 return;

@@ -2,6 +2,7 @@
 using EmuladorGBA.Business.Extensions;
 using EmuladorGBA.Business.Interface;
 using EmuladorGBA.Business.Intruction;
+using EmuladorGBA.Business.Memory;
 using EmuladorGBA.Business.Process.Load;
 using EmuladorGBA.Business.Register;
 
@@ -12,6 +13,7 @@ namespace EmuladorGBA.Business.Process
         public Cpu()
         {
             this.CpuRegisters = new CpuRegisters();
+            this.Stack = new Stack(this);
 
             // CONFIG INIT
             this.CpuRegisters.SetRegisterPC(0x100);
@@ -51,7 +53,8 @@ namespace EmuladorGBA.Business.Process
                     $"({this.CpuOpeCode:X2} {this.Bus.Read((ushort)(pc + 1)):X2} {this.Bus.Read((ushort)(pc + 2)):X2}) " +
                     $"A: {this.CpuRegisters.A:X2} BC: {this.CpuRegisters.B:X2}{this.CpuRegisters.C:X2} " +
                     $"DE: {this.CpuRegisters.D:X2}{this.CpuRegisters.E:X2} " +
-                    $"HL: {this.CpuRegisters.H:X2}{this.CpuRegisters.L:X2} " 
+                    $"HL: {this.CpuRegisters.H:X2}{this.CpuRegisters.L:X2} " +
+                    $"SP: {this.CpuRegisters.SP:X2} " 
                 );
 
 

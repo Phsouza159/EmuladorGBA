@@ -10,6 +10,6 @@ namespace EmuladorGBA.Business.Config
     {
         public int WRAM_Length { get; set; }
 
-        public short HRAM_Length { get; set; }
+        public int HRAM_Length { get; set; }
     }
 }

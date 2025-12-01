@@ -3,9 +3,11 @@ using EmuladorGBA.Business.Interface;
 using EmuladorGBA.Business.Intruction;
 using EmuladorGBA.Business.Process.Load;
 using EmuladorGBA.Business.Register;
+using EmuladorGBA.Business.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -17,7 +19,9 @@ namespace EmuladorGBA.Business.Process
 
         internal IBus Bus { get; set; }
 
-        internal CpuRegisters CpuRegisters;
+        internal IStack Stack { get; set; }
+
+        public CpuRegisters CpuRegisters;
 
         internal CpuInstruction Instruction;
 
@@ -100,15 +104,106 @@ namespace EmuladorGBA.Business.Process
 
         #endregion
 
+        #region AUX - GO TO ADDRESS
+
+        internal void GOTO_ADDR (ushort address, bool isPushPC)
+        {
+            if (this.CheckCond())
+            { 
+                if(isPushPC)
+                {
+                    this.Cycles(2);
+                    this.Stack.Push(this.CpuRegisters.PC);
+                }
+
+                this.CpuRegisters.SetRegisterPC(address);
+                this.Cycles(1);
+            }
+        }
+
+        #endregion
+
         #region PROC JP
 
         internal void PROC_JP()
         {
+            // AUX JUMP
+            this.GOTO_ADDR(this.FetchedData, isPushPC: false);
+        }
+
+        #endregion
+
+        #region PROC JR
+
+        internal void PROC_JR()
+        {
+            byte rel = (byte)(this.FetchedData & 0xFF);
+            ushort address = (ushort)(this.CpuRegisters.PC + rel);
+
+            // AUX JUMP R
+            this.GOTO_ADDR(address, isPushPC: false);
+        }
+
+        #endregion
+
+        #region PROC CALL
+
+        internal void PROC_CALL()
+        {
+            // AUX JUMP
+            this.GOTO_ADDR(this.FetchedData, isPushPC: true);
+        }
+
+        #endregion
+
+        #region PROC RST
+
+        internal void PROC_RST()
+        {
+            // AUX JUMP
+            this.GOTO_ADDR(this.Instruction.Param, isPushPC: true);
+        }
+
+        #endregion
+
+        #region PROC RET
+
+        internal void PROC_RET()
+        {
+            if(this.Instruction.Cond != CondType.CT_NONE)
+            {
+                this.Cycles(1); 
+            }
+
             if (this.CheckCond())
             {
-                this.CpuRegisters.SetRegisterPC(this.FetchedData);
+                byte lo = this.Stack.Pop();
+                this.Cycles(1);
+
+                byte hi = this.Stack.Pop();
+                this.Cycles(1);
+
+                ushort value = (ushort)((hi << 8) | lo);
+                this.CpuRegisters.SetRegisterPC(value);
+
                 this.Cycles(1);
             }
+        }
+
+        #endregion
+
+        #region PROC RETI
+
+        internal void PROC_RETI()
+        {
+            if (this is Cpu cpu)
+            {
+                cpu.IntMasterEnabled = true;
+                this.PROC_RET();
+                return;
+            }
+
+            throw ExceptionsUtil.NotSupportedCpu();
         }
 
         #endregion
@@ -199,13 +294,66 @@ namespace EmuladorGBA.Business.Process
             }
             else
             {
-                this.Bus.Write((ushort)(0xFF00 | this.FetchedData), this.CpuRegisters.A);
+                // this.Bus.Write((ushort)(0xFF00 | this.FetchedData), this.CpuRegisters.A);
+                this.Bus.Write(this.MemoryAdressDest, this.CpuRegisters.A);
             }
 
             this.Cycles(1);
         }
 
         #endregion
+
+        #region PROC POP
+
+        public void PROC_POP()
+        {
+            if(this is Cpu cpu)
+            {
+                ushort lo = this.Stack.Pop();
+                this.Cycles(1);
+                ushort hi = this.Stack.Pop();
+                this.Cycles(1);
+
+                ushort value = (ushort)((hi << 8) | lo);
+                cpu.CpuWriteRegister(cpu.Instruction.Reg1, value);
+
+                // CORRECT TO REG AF
+                if(cpu.Instruction.Reg1 == RegType.RT_AF)
+                    cpu.CpuWriteRegister(cpu.Instruction.Reg1, (ushort)(value & 0xFFF0));
+
+                return;
+            }
+
+            throw ExceptionsUtil.NotSupportedCpu();
+        }
+
+        #endregion
+
+        #region PROC PUSH
+
+        public void PROC_PUSH()
+        {
+            if (this is Cpu cpu)
+            {
+                ushort hi = (ushort)((cpu.CpuReadRegister(cpu.Instruction.Reg1) >> 8) & 0xFF);
+                this.Cycles(1);
+
+                this.Stack.Push(hi);
+
+                ushort lo = (ushort)(cpu.CpuReadRegister(cpu.Instruction.Reg2) & 0xFF);
+                this.Cycles(1);
+
+                this.Stack.Push(lo);
+                this.Cycles(1);
+
+                return;
+            }
+
+            throw ExceptionsUtil.NotSupportedCpu();
+        }
+
+        #endregion
+
 
         #region AUX PROCESS
 

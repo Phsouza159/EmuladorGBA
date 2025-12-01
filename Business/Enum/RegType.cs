@@ -8,7 +8,7 @@ namespace EmuladorGBA.Business.Enum
 {
     internal enum RegType
     {
-        RT_NONE,
+        RT_NONE = 0,
         RT_A,
         RT_F,
         RT_B,
