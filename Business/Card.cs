@@ -217,7 +217,6 @@ namespace EmuladorGBA.Business
 
         public void Write(ushort adress, byte value)
         {
-            Console.WriteLine("Sem implementacao para WRITE");
         }
 
         #endregion

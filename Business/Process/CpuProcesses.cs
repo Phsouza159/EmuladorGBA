@@ -13,6 +13,10 @@ namespace EmuladorGBA.Business.Process
 {
     internal abstract class CpuProcesses : ICpu
     {
+        #region DATA VALUES
+
+        internal IBus Bus { get; set; }
+
         internal CpuRegisters CpuRegisters;
 
         internal CpuInstruction Instruction;
@@ -20,6 +24,26 @@ namespace EmuladorGBA.Business.Process
         internal ushort FetchedData;
 
         internal bool IntMasterEnabled;
+
+        internal const short ResolutionWeidth = 160;
+
+        internal const short ResolutionHeight = 144;
+
+        internal CpuInstruction[] CpuInstructions { get; set; }
+
+        internal byte CpuOpeCode { get; set; }
+
+        internal ushort MemoryAdressDest { get; set; }
+
+        internal bool DestIsMemory { get; set; }
+
+        internal bool Halted;
+
+        internal bool Stepping;
+
+        public int Tickets = 0;
+
+        #endregion
 
         internal void Cycles(int cpu_cycles)
         {
@@ -60,7 +84,6 @@ namespace EmuladorGBA.Business.Process
         internal bool CPU_FLAG_H => BitHelper.Bit(this.CpuRegisters.F, 5) == 1;
         internal bool CPU_FLAG_C => BitHelper.Bit(this.CpuRegisters.F, 4) == 1;
 
-
         internal void PROC_NONE()
         {
             throw new ArgumentException($"Instrução Inválida");
@@ -80,10 +103,48 @@ namespace EmuladorGBA.Business.Process
             // TODO...
         }
 
+        #region LD
+
         internal void PROC_LD()
         {
-            // TODO...
+            if(this is Cpu cpu)
+            {
+                if(this.DestIsMemory)
+                {
+                    //if 16 bit register...
+                    if (this.Instruction.Reg2 >= RegType.RT_AF)
+                    {
+                        this.Cycles(1);
+                        this.Bus.WriteB16(this.MemoryAdressDest, this.FetchedData);
+                    }
+                    else
+                        this.Bus.Write(this.MemoryAdressDest, (byte)(this.FetchedData));
+
+                    return;
+                }
+
+                if (this.Instruction.Mode == AddrMode.AM_HL_SPR)
+                {
+                    int hflag = ((cpu.CpuReadRegister(this.Instruction.Reg2) & 0xF)
+                            + (this.FetchedData & 0xF)) >= 0x10 ? 1 : 0;
+
+                    int cflag = ((cpu.CpuReadRegister(this.Instruction.Reg2) & 0xF)
+                                + (this.FetchedData & 0xF)) >= 0x100 ? 1 : 0;
+
+                    cpu.CpuSetFlags(0, 0, hflag, cflag);
+                    cpu.CpuWriteRegister(
+                        this.Instruction.Reg1
+                        , (ushort)(cpu.CpuReadRegister(this.Instruction.Reg2) + ((byte)this.FetchedData))
+                    );
+
+                    return;
+                }
+
+                cpu.CpuWriteRegister(this.Instruction.Reg1 , this.FetchedData);
+            }
         }
+
+        #endregion
 
         internal void PROC_XOR()
         {
@@ -125,22 +186,22 @@ namespace EmuladorGBA.Business.Process
         {
             if (z != -1)
             {
-                BitHelper.BitSet(ref this.CpuRegisters.F, 7, z == 0);
+                BitHelper.BitSet(ref this.CpuRegisters.F, 7, z == 1);
             }
 
             if (n != -1)
             {
-                BitHelper.BitSet(ref this.CpuRegisters.F, 6, n == 0);
+                BitHelper.BitSet(ref this.CpuRegisters.F, 6, n == 1);
             }
 
             if (h != -1)
             {
-                BitHelper.BitSet(ref this.CpuRegisters.F, 5, h == 0);
+                BitHelper.BitSet(ref this.CpuRegisters.F, 5, h == 1);
             }
 
             if (c != -1)
             {
-                BitHelper.BitSet(ref this.CpuRegisters.F, 4, c == 0);
+                BitHelper.BitSet(ref this.CpuRegisters.F, 4, c == 1);
             }
         }
 

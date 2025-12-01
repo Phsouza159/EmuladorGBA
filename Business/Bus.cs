@@ -1,4 +1,5 @@
 ﻿using EmuladorGBA.Business.Interface;
+using System.Net;
 
 namespace EmuladorGBA.Business
 {
@@ -26,14 +27,39 @@ namespace EmuladorGBA.Business
 
         private ICart Cart { get; set; }
 
-        public byte Read(ushort adress)
+        public byte Read(ushort address)
         {
-            return this.Cart.Read(adress);
+            if (address < 0x8000)
+            {
+                //ROM Data
+                return this.Cart.Read(address);
+            }
+
+            Console.WriteLine($"Sem suporte para leitura em {address:4X}");
+            return 0;
         }
 
-        public void Write(ushort adress, byte value)
+        public ushort ReadB16(ushort address)
         {
-             this.Cart.Write(adress, value);
+            ushort lo = this.Read(address);
+            ushort hi = this.Read((ushort)(address + 1));
+
+            return (ushort)(lo | (hi << 8));
+        }
+
+        public void Write(ushort address, byte value)
+        {
+             this.Cart.Write(address, value);
+
+            Console.WriteLine($"Sem implementacao para WRITE em {address:X2} : Value {value:X4}");
+        }
+
+        public void WriteB16(ushort address, ushort value)
+        {
+            this.Cart.Write((ushort)(address + 1), (byte)((value >> 8) & 0xFF));
+            this.Cart.Write(address, (byte)(value & 0xFF));
+
+            Console.WriteLine($"Sem implementacao para WRITE em {address:X4} : Value {value:X4}");
         }
     }
 }

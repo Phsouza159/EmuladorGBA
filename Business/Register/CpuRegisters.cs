@@ -20,19 +20,22 @@ namespace EmuladorGBA.Business.Register
 
         internal byte H, L; // HL
 
-        internal void SetRegisterA(byte value)
-        {
-            this.A = value;
-        }
+        internal void SetRegisterA(byte value) => this.A = value;
+        internal void SetRegisterF(byte value) => this.F = value;
 
-        internal void SetRegisterPC(ushort value)
-        {
-            this.PC = value;
-        }
+        internal void SetRegisterB(byte value) => this.B = value;
+        internal void SetRegisterC(byte value) => this.C = value;
 
-        internal void IncrementPC()
-        {
-            this.PC += 1;
-        }
+        internal void SetRegisterD(byte value) => this.D = value;
+        internal void SetRegisterE(byte value) => this.E = value;
+
+        internal void SetRegisterH(byte value) => this.H = value;
+        internal void SetRegisterL(byte value) => this.L = value;
+
+        internal void SetRegisterPC(ushort value) => this.PC = value;
+        internal void SetRegisterSP(ushort value) => this.SP = value;
+
+
+        internal void IncrementPC() => this.PC += 1;
     }
 }

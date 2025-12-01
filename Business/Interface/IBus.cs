@@ -8,8 +8,12 @@ namespace EmuladorGBA.Business.Interface
 {
     public interface IBus
     {
-        byte Read(ushort adress);
+        byte Read(ushort address);
 
-        void Write(ushort adress, byte value);
+        ushort ReadB16(ushort address);
+
+        void Write(ushort address, byte value);
+
+        void WriteB16(ushort address, ushort value);
     }
 }

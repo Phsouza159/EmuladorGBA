@@ -7,7 +7,7 @@ using EmuladorGBA.Business.Register;
 
 namespace EmuladorGBA.Business.Process
 {
-    internal partial class Cpu : CpuProcesses
+    internal class Cpu : CpuProcesses
     {
         public Cpu(IBus bus)
         {
@@ -22,29 +22,6 @@ namespace EmuladorGBA.Business.Process
             this.LoadProcess();
         }
 
-        internal IBus Bus { get; }
-
-        #region DATA VALUES
-
-        internal const short ResolutionWeidth = 160;
-
-        internal const short ResolutionHeight = 144;
-
-        internal CpuInstruction[] CpuInstructions { get;  set; }
-
-        internal byte CpuOpeCode { get; set; }
-
-        internal ushort MemoryAdressDest { get; set; }
-
-        internal bool DestIsMemory { get; set; }
-
-        internal bool Halted;
-
-        internal bool Stepping;
-
-        public int Tickets = 0;
-
-        #endregion
 
         #region LOAD INSTRUCTION / PROCESS
 

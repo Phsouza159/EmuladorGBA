@@ -65,5 +65,30 @@ namespace EmuladorGBA.Business.Process
                 default: return 0;
             }
         }
+
+        internal static void CpuWriteRegister(this Cpu cpu, RegType rt, ushort value)
+        {
+            switch (rt)
+            {
+                case RegType.RT_A:  cpu.CpuRegisters.SetRegisterA((byte)(value & 0xFF)); break;
+                case RegType.RT_F:  cpu.CpuRegisters.SetRegisterF((byte)(value & 0xFF)); break;
+                case RegType.RT_B:  cpu.CpuRegisters.SetRegisterB((byte)(value & 0xFF)); break;
+                case RegType.RT_C:  cpu.CpuRegisters.SetRegisterC((byte)(value & 0xFF)); break;
+                case RegType.RT_D:  cpu.CpuRegisters.SetRegisterD((byte)(value & 0xFF)); break;
+                case RegType.RT_E:  cpu.CpuRegisters.SetRegisterE((byte)(value & 0xFF)); break;
+                case RegType.RT_H:  cpu.CpuRegisters.SetRegisterH((byte)(value & 0xFF)); break;
+                case RegType.RT_L:  cpu.CpuRegisters.SetRegisterL((byte)(value & 0xFF)); break;
+
+                case RegType.RT_AF: cpu.CpuRegisters.SetRegisterA((byte)(Reverse(cpu, value))); break;
+                case RegType.RT_BC: cpu.CpuRegisters.SetRegisterB((byte)(Reverse(cpu, value))); break;
+                case RegType.RT_DE: cpu.CpuRegisters.SetRegisterD((byte)(Reverse(cpu, value))); break;
+                case RegType.RT_HL: cpu.CpuRegisters.SetRegisterH((byte)(Reverse(cpu, value))); break;
+
+                case RegType.RT_SP: cpu.CpuRegisters.SetRegisterSP(value); break;
+                case RegType.RT_PC: cpu.CpuRegisters.SetRegisterPC(value); break;
+
+                case RegType.RT_NONE: break;
+            }
+        }
     }
 }
