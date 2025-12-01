@@ -21,15 +21,18 @@ namespace EmuladorGBA.Business
         // 0xFF00 - 0xFF7F : I/O Registers
         // 0xFF80 - 0xFFFE : Zero Page
 
-        public Bus(ICart Cart, IRamMemory ramMemory)
+        public Bus(ICart Cart, IRamMemory ramMemory, ICpu cpu)
         {
             this.Cart = Cart;
             this.Memory = ramMemory;
+            this.Cpu = cpu;
         }
 
         private ICart Cart { get; set; }
 
         private IRamMemory Memory { get; set; }
+
+        private ICpu Cpu { get; set; }
 
         public byte Read(ushort address)
         {
@@ -83,9 +86,7 @@ namespace EmuladorGBA.Business
             else if (address == 0xFFFF)
             {
                 // CPU REGISTERS
-                // TODO
-                ConsoleUtil.ShowMensagemNotImplement();
-                Console.WriteLine($"Sem suporte para leitura em {address:4X}"); 
+                return this.Cpu.CpuGetRegisterIE();
             }
 
             return this.Memory.ReadMemoryHRam(address);
@@ -112,7 +113,7 @@ namespace EmuladorGBA.Business
                 // CHAR/MAP DATA 
                 // TODO
                 ConsoleUtil.ShowMensagemNotImplement();
-                Console.WriteLine($"Sem suporte para WRITE em {address:4X}");
+                Console.WriteLine($"Sem suporte para WRITE em CHAR/MAP DATA  {address:X2}");
             }
             else if (address < 0xC000)
             {
@@ -133,7 +134,7 @@ namespace EmuladorGBA.Business
                 // Object Attribute Memory
                 // TODO
                 ConsoleUtil.ShowMensagemNotImplement();
-                Console.WriteLine($"Sem suporte para WRITE em {address:4X}");
+                Console.WriteLine($"Sem suporte para WRITE em Object Attribute Memory {address:X2}");
 
             }
             else if (address < 0xFF00)
@@ -145,14 +146,12 @@ namespace EmuladorGBA.Business
                 // IO Registers
                 // TODO
                 ConsoleUtil.ShowMensagemNotImplement();
-                Console.WriteLine($"Sem suporte para WRITE em {address:4X}");
+                Console.WriteLine($"Sem suporte para WRITE em IO Registers {address:X2}");
             }
             else if (address == 0xFFFF)
             {
                 // CPU REGISTERS
-                // TODO
-                ConsoleUtil.ShowMensagemNotImplement();
-                Console.WriteLine($"Sem suporte para WRITE em {address:4X}");
+                this.Cpu.CpuSetRegisterIE(value);
             }
             else
             {

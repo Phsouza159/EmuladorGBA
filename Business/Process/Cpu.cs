@@ -9,10 +9,9 @@ namespace EmuladorGBA.Business.Process
 {
     internal class Cpu : CpuProcesses
     {
-        public Cpu(IBus bus)
+        public Cpu()
         {
             this.CpuRegisters = new CpuRegisters();
-            this.Bus = bus;
 
             // CONFIG INIT
             this.CpuRegisters.SetRegisterPC(0x100);
@@ -48,7 +47,7 @@ namespace EmuladorGBA.Business.Process
                 this.FecthData();
 
                 Console.WriteLine(
-                    $"Ticekt {this.Tickets} | PC {pc:X4}: {this.InstName(this.Instruction.Type),-7} " +
+                    $"Ticekt {this.Tickets, -5} | PC {pc:X4}: {this.InstName(this.Instruction.Type),-7} " +
                     $"({this.CpuOpeCode:X2} {this.Bus.Read((ushort)(pc + 1)):X2} {this.Bus.Read((ushort)(pc + 2)):X2}) " +
                     $"A: {this.CpuRegisters.A:X2} BC: {this.CpuRegisters.B:X2}{this.CpuRegisters.C:X2} " +
                     $"DE: {this.CpuRegisters.D:X2}{this.CpuRegisters.E:X2} " +

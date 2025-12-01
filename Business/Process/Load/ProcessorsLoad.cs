@@ -12,6 +12,7 @@ namespace EmuladorGBA.Business.Process.Load
             cpu.Processors[(short)InType.IN_NONE]   = cpu.PROC_NONE;
             cpu.Processors[(short)InType.IN_NOP]    = cpu.PROC_NOP;
             cpu.Processors[(short)InType.IN_LD]     = cpu.PROC_LD;
+            cpu.Processors[(short)InType.IN_LDH]    = cpu.PROC_LDH;
             cpu.Processors[(short)InType.IN_JP]     = cpu.PROC_JP;
             cpu.Processors[(short)InType.IN_DI]     = cpu.PROC_DI;
             cpu.Processors[(short)InType.IN_XOR]    = cpu.PROC_XOR;

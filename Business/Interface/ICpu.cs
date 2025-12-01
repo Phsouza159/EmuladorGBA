@@ -9,5 +9,8 @@ namespace EmuladorGBA.Business.Interface
 {
     internal interface ICpu
     {
+        internal byte CpuGetRegisterIE();
+
+        internal void CpuSetRegisterIE(byte value);
     }
 }

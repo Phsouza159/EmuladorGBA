@@ -129,10 +129,13 @@ namespace EmuladorGBA.Business.Process.Load
             cpu.CpuInstructions[0xC3] = new CpuInstruction { Type = InType.IN_JP,   Mode = AddrMode.AM_D16 };
 
             //-EX
+            cpu.CpuInstructions[0xE0] = new CpuInstruction { Type = InType.IN_LDH,  Mode = AddrMode.AM_A8_R,    Reg1 = RegType.RT_NONE, Reg2 = RegType.RT_A };
+
             cpu.CpuInstructions[0xE2] = new CpuInstruction { Type = InType.IN_LD,   Mode = AddrMode.AM_MR_R,    Reg1 = RegType.RT_C,    Reg2 = RegType.RT_A };
             cpu.CpuInstructions[0xEA] = new CpuInstruction { Type = InType.IN_LD,   Mode = AddrMode.AM_A16_R,   Reg1 = RegType.RT_NONE, Reg2 = RegType.RT_A };
 
             //-FX
+            cpu.CpuInstructions[0xF0] = new CpuInstruction { Type = InType.IN_LDH,  Mode = AddrMode.AM_R_A8,    Reg1 = RegType.RT_A };
             cpu.CpuInstructions[0xF2] = new CpuInstruction { Type = InType.IN_LD,   Mode = AddrMode.AM_R_MR,    Reg1 = RegType.RT_A,    Reg2 = RegType.RT_C };
             cpu.CpuInstructions[0xF3] = new CpuInstruction { Type = InType.IN_DI };
             cpu.CpuInstructions[0xFA] = new CpuInstruction { Type = InType.IN_LD,   Mode = AddrMode.AM_R_A16,   Reg1 = RegType.RT_A };

@@ -41,6 +41,8 @@ namespace EmuladorGBA.Business.Process
 
         internal bool Stepping;
 
+        protected byte RegisterIE;
+
         public int Tickets = 0;
 
         #endregion
@@ -65,6 +67,14 @@ namespace EmuladorGBA.Business.Process
             proc.Invoke();
         }
 
+        #region REGISTER IE
+
+        public byte CpuGetRegisterIE() => this.RegisterIE;
+
+        public void CpuSetRegisterIE(byte value) => this.RegisterIE = value;
+
+        #endregion
+
         #region CPU PROCESSOR
 
         internal delegate void IN_PROC();
@@ -76,18 +86,21 @@ namespace EmuladorGBA.Business.Process
             return this.Processors[(short)type];
         }
 
-        #endregion PROCESS
-
-
         internal bool CPU_FLAG_Z => BitHelper.Bit(this.CpuRegisters.F, 7) == 1;
         internal bool CPU_FLAG_N => BitHelper.Bit(this.CpuRegisters.F, 6) == 1;
         internal bool CPU_FLAG_H => BitHelper.Bit(this.CpuRegisters.F, 5) == 1;
         internal bool CPU_FLAG_C => BitHelper.Bit(this.CpuRegisters.F, 4) == 1;
 
+        #region PROC NONE
+
         internal void PROC_NONE()
         {
             throw new ArgumentException($"Instrução Inválida");
         }
+
+        #endregion
+
+        #region PROC JP
 
         internal void PROC_JP()
         {
@@ -98,12 +111,18 @@ namespace EmuladorGBA.Business.Process
             }
         }
 
+        #endregion
+
+        #region PROC NOP
+
         internal void PROC_NOP()
         {
             // TODO...
         }
 
-        #region LD
+        #endregion
+
+        #region PROC LD
 
         internal void PROC_LD()
         {
@@ -146,6 +165,8 @@ namespace EmuladorGBA.Business.Process
 
         #endregion
 
+        #region PROC XOR
+
         internal void PROC_XOR()
         {
             byte a = this.CpuRegisters.A;
@@ -157,10 +178,34 @@ namespace EmuladorGBA.Business.Process
             this.CpuSetFlags(z, 0, 0, 0);
         }
 
+        #endregion
+
+        #region PROC DI
+
         internal void PROC_DI()
         {
             this.IntMasterEnabled = false;
         }
+
+        #endregion
+
+        #region PROC LDH
+
+        internal void PROC_LDH()
+        {
+            if (this.Instruction.Reg1 == RegType.RT_A && this is Cpu cpu)
+            {
+                cpu.CpuWriteRegister(this.Instruction.Reg1, this.Bus.Read((ushort)(0xFF00 | this.FetchedData)));
+            }
+            else
+            {
+                this.Bus.Write((ushort)(0xFF00 | this.FetchedData), this.CpuRegisters.A);
+            }
+
+            this.Cycles(1);
+        }
+
+        #endregion
 
         #region AUX PROCESS
 
@@ -206,5 +251,7 @@ namespace EmuladorGBA.Business.Process
         }
 
         #endregion
+
+        #endregion PROCESS
     }
 }

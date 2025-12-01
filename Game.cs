@@ -23,15 +23,12 @@ namespace EmuladorGBA
             };
 
             this.Card = new Card();
-            this.Bus = new Bus(this.Card, new RamMemory(memoryMap));
-            this.Cpu = new Cpu(this.Bus);
+            this.Cpu  = new Cpu();
+            this.Cpu.Bus = new Bus(this.Card, new RamMemory(memoryMap), this.Cpu);
         }
 
         private Cpu Cpu { get; set; }
-
         private Card Card { get; set; }
-
-        private IBus Bus { get; set; }
 
         public bool Running { get; private set; }
         public bool Paused { get; private set; }
@@ -58,6 +55,7 @@ namespace EmuladorGBA
 
         internal void Start()
         {
+            int sleepTime = 250;
             this.Running = true;
             this.Paused = false;
 
@@ -65,7 +63,7 @@ namespace EmuladorGBA
             {
                 if(this.Paused)
                 {
-                    Thread.Sleep(500);
+                    Thread.Sleep(sleepTime);
                     continue;
                 }
 
@@ -77,7 +75,7 @@ namespace EmuladorGBA
                 this.Cpu.Tickets += 1;
 
                 //TODO...
-                Thread.Sleep(500);
+                Thread.Sleep(sleepTime);
             }
         }
 
