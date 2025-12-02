@@ -1,4 +1,5 @@
 ﻿using EmuladorGBA.Business.Enum;
+using EmuladorGBA.Business.Extensions;
 using EmuladorGBA.Business.Interface;
 using EmuladorGBA.Business.Intruction;
 using EmuladorGBA.Business.Process.Load;
@@ -226,7 +227,7 @@ namespace EmuladorGBA.Business.Process
                 if(this.DestIsMemory)
                 {
                     //if 16 bit register...
-                    if (this.Instruction.Reg2 >= RegType.RT_AF)
+                    if (this.Instruction.Is16Bits())
                     {
                         this.Cycles(1);
                         this.Bus.WriteB16(this.MemoryAdressDest, this.FetchedData);
@@ -335,12 +336,12 @@ namespace EmuladorGBA.Business.Process
         {
             if (this is Cpu cpu)
             {
-                ushort hi = (ushort)((cpu.CpuReadRegister(cpu.Instruction.Reg1) >> 8) & 0xFF);
+                byte hi = (byte)((cpu.CpuReadRegister(cpu.Instruction.Reg1) >> 8) & 0xFF);
                 this.Cycles(1);
 
                 this.Stack.Push(hi);
 
-                ushort lo = (ushort)(cpu.CpuReadRegister(cpu.Instruction.Reg2) & 0xFF);
+                byte lo = (byte)(cpu.CpuReadRegister(cpu.Instruction.Reg1) & 0xFF);
                 this.Cycles(1);
 
                 this.Stack.Push(lo);
@@ -354,6 +355,95 @@ namespace EmuladorGBA.Business.Process
 
         #endregion
 
+        #region PROC INC
+
+        internal void PROC_INC()
+        {
+            if(this is Cpu cpu)
+            {
+                ushort value = cpu.CpuReadRegister(cpu.Instruction.Reg1);
+                // INCREMENT
+                value += 1;
+
+                if(cpu.Instruction.Is16Bits())
+                {
+                    cpu.Cycles(1);
+                }
+
+                if(cpu.Instruction.Reg1 == RegType.RT_HL && cpu.Instruction.Mode == AddrMode.AM_MR)
+                {
+                    value = cpu.Bus.Read((ushort)(cpu.CpuReadRegister(RegType.RT_HL) + 1));
+                    value &= 0xFF;
+                    // TODO: is 16 or 8 bits /
+                    cpu.Bus.Write(cpu.CpuReadRegister(RegType.RT_HL), (byte)value);
+                }
+                else
+                {
+                    cpu.CpuWriteRegister(cpu.Instruction.Reg1, value);
+                    value = cpu.CpuReadRegister(cpu.Instruction.Reg1);
+                }
+
+                // BREAK //0x03 NOT FLAGS
+                if ((cpu.CpuOpeCode & 0x03) == 0x03) return;
+
+                // TODO VALIDADE 
+                cpu.CpuSetFlags(value == 0 ? 1 : 0, 0, (value & 0x0F), - 1);
+            }
+        }
+
+        #endregion
+
+        #region PROC DEC
+
+        internal void PROC_DEC()
+        {
+            if (this is Cpu cpu)
+            {
+                ushort value = cpu.CpuReadRegister(cpu.Instruction.Reg1);
+                // INCREMENT
+                value += 1;
+
+                if (cpu.Instruction.Is16Bits())
+                {
+                    cpu.Cycles(1);
+                }
+
+                if (cpu.Instruction.Reg1 == RegType.RT_HL && cpu.Instruction.Mode == AddrMode.AM_MR)
+                {
+                    value = cpu.Bus.Read((ushort)(cpu.CpuReadRegister(RegType.RT_HL) - 1));
+                    // TODO: is 16 or 8 bits /
+                    cpu.Bus.Write(cpu.CpuReadRegister(RegType.RT_HL), (byte)value);
+                }
+                else
+                {
+                    cpu.CpuWriteRegister(cpu.Instruction.Reg1, value);
+                    value = cpu.CpuReadRegister(cpu.Instruction.Reg1);
+                }
+
+                // BREAK //0x0B NOT FLAGS
+                if ((cpu.CpuOpeCode & 0x0B) == 0x0B) return;
+
+                // TODO VALIDADE 
+                cpu.CpuSetFlags((value == 0 ? 1 : 0), 1, ((value & 0x0F) == 0X0F) ? 1 : 0, -1);
+            }
+        }
+
+        #endregion
+
+        #region PROC ADD
+
+        internal void PROC_ADD()
+        {
+            if(this is Cpu cpu)
+            {
+                // TODO...
+                return;
+            }
+
+            throw ExceptionsUtil.NotSupportedCpu();
+        }
+
+        #endregion
 
         #region AUX PROCESS
 

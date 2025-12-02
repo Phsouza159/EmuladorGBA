@@ -1,4 +1,6 @@
-﻿namespace EmuladorGBA.Business.Extensions
+﻿using EmuladorGBA.Business.Intruction;
+
+namespace EmuladorGBA.Business.Extensions
 {
     internal static class StructExtension
     {
@@ -6,6 +8,11 @@
             where Struct : struct
         {
             return item.Equals(default(Struct));
+        }
+
+        public static bool Is16Bits(this CpuInstruction instruction)
+        {
+            return instruction.Reg1 >= Enum.RegType.RT_AF;
         }
     }
 }

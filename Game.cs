@@ -55,9 +55,11 @@ namespace EmuladorGBA
 
         internal void Start()
         {
-            int sleepTime = 250;
+            int sleepTime = 50;
             this.Running = true;
             this.Paused = false;
+
+            Console.WriteLine("--------------- RUNNING....");
 
             while (this.Running)
             {
@@ -76,6 +78,9 @@ namespace EmuladorGBA
 
                 //TODO...
                 Thread.Sleep(sleepTime);
+
+                // TEST LIMIT CPU TICKETS
+                //if (this.Cpu.Tickets == 50) break;
             }
         }
 

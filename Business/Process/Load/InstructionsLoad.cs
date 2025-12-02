@@ -13,6 +13,8 @@ namespace EmuladorGBA.Business.Process.Load
             cpu.CpuInstructions[0x00] = new CpuInstruction { Type = InType.IN_NOP,  Mode = AddrMode.AM_IMP };
             cpu.CpuInstructions[0x01] = new CpuInstruction { Type = InType.IN_LD,   Mode = AddrMode.AM_R_D16,   Reg1 = RegType.RT_BC };
             cpu.CpuInstructions[0x02] = new CpuInstruction { Type = InType.IN_LD,   Mode = AddrMode.AM_MR_R,    Reg1 = RegType.RT_A };
+            cpu.CpuInstructions[0x03] = new CpuInstruction { Type = InType.IN_INC,  Mode = AddrMode.AM_R,       Reg1 = RegType.RT_BC };
+            cpu.CpuInstructions[0x04] = new CpuInstruction { Type = InType.IN_INC,  Mode = AddrMode.AM_R,       Reg1 = RegType.RT_B };
 
             cpu.CpuInstructions[0x05] = new CpuInstruction { Type = InType.IN_DEC,  Mode = AddrMode.AM_R,       Reg1 = RegType.RT_B };
             cpu.CpuInstructions[0x06] = new CpuInstruction { Type = InType.IN_LD,   Mode = AddrMode.AM_R_D8,    Reg1 = RegType.RT_B };
@@ -20,36 +22,45 @@ namespace EmuladorGBA.Business.Process.Load
             cpu.CpuInstructions[0x08] = new CpuInstruction { Type = InType.IN_LD,   Mode = AddrMode.AM_A16_R,   Reg1 = RegType.RT_NONE, Reg2 = RegType.RT_SP };
 
             cpu.CpuInstructions[0x0A] = new CpuInstruction { Type = InType.IN_LD,   Mode = AddrMode.AM_R_MR,    Reg1 = RegType.RT_A,    Reg2 = RegType.RT_BC };
-
+            cpu.CpuInstructions[0x0C] = new CpuInstruction { Type = InType.IN_INC,  Mode = AddrMode.AM_R,       Reg1 = RegType.RT_C };
             cpu.CpuInstructions[0x0E] = new CpuInstruction { Type = InType.IN_LD,   Mode = AddrMode.AM_R_D8,    Reg1 = RegType.RT_C };
 
             //-1X
             cpu.CpuInstructions[0x11] = new CpuInstruction { Type = InType.IN_LD,   Mode = AddrMode.AM_R_D16,   Reg1 = RegType.RT_DE };
             cpu.CpuInstructions[0x12] = new CpuInstruction { Type = InType.IN_LD,   Mode = AddrMode.AM_MR_R,    Reg1 = RegType.RT_DE,   Reg2 = RegType.RT_A };
+            cpu.CpuInstructions[0x13] = new CpuInstruction { Type = InType.IN_INC,  Mode = AddrMode.AM_R,       Reg1 = RegType.RT_DE };
+            cpu.CpuInstructions[0x14] = new CpuInstruction { Type = InType.IN_INC,  Mode = AddrMode.AM_R,       Reg1 = RegType.RT_D };
             cpu.CpuInstructions[0x15] = new CpuInstruction { Type = InType.IN_DEC,  Mode = AddrMode.AM_R,       Reg1 = RegType.RT_D };
             cpu.CpuInstructions[0x16] = new CpuInstruction { Type = InType.IN_LD,   Mode = AddrMode.AM_R_D8,    Reg1 = RegType.RT_D };
             cpu.CpuInstructions[0X18] = new CpuInstruction { Type = InType.IN_JR,   Mode = AddrMode.AM_D8 };
             cpu.CpuInstructions[0x1A] = new CpuInstruction { Type = InType.IN_LD,   Mode = AddrMode.AM_MR_R,    Reg1 = RegType.RT_A,    Reg2 = RegType.RT_DE };
+            cpu.CpuInstructions[0x1C] = new CpuInstruction { Type = InType.IN_INC,  Mode = AddrMode.AM_R,       Reg1 = RegType.RT_E };
             cpu.CpuInstructions[0x1E] = new CpuInstruction { Type = InType.IN_LD,   Mode = AddrMode.AM_R_D8,    Reg1 = RegType.RT_E };
 
             //-2X
             cpu.CpuInstructions[0x20] = new CpuInstruction { Type = InType.IN_JR,   Mode = AddrMode.AM_D8,      Reg1 = RegType.RT_NONE, Reg2 = RegType.RT_NONE, Cond = CondType.CT_NZ };
             cpu.CpuInstructions[0x21] = new CpuInstruction { Type = InType.IN_LD,   Mode = AddrMode.AM_R_D16,   Reg1 = RegType.RT_HL };
             cpu.CpuInstructions[0x22] = new CpuInstruction { Type = InType.IN_LD,   Mode = AddrMode.AM_HLI_R,   Reg1 = RegType.RT_HL,   Reg2 = RegType.RT_A };
+            cpu.CpuInstructions[0x23] = new CpuInstruction { Type = InType.IN_INC,  Mode = AddrMode.AM_R,       Reg1 = RegType.RT_HL };
+            cpu.CpuInstructions[0x24] = new CpuInstruction { Type = InType.IN_INC,  Mode = AddrMode.AM_R,       Reg1 = RegType.RT_H };
             cpu.CpuInstructions[0x25] = new CpuInstruction { Type = InType.IN_DEC,  Mode = AddrMode.AM_R,       Reg1 = RegType.RT_H };
             cpu.CpuInstructions[0x26] = new CpuInstruction { Type = InType.IN_LD,   Mode = AddrMode.AM_R_D8,    Reg1 = RegType.RT_H };
             cpu.CpuInstructions[0X28] = new CpuInstruction { Type = InType.IN_JR,   Mode = AddrMode.AM_D8,      Reg1 = RegType.RT_NONE, Reg2 = RegType.RT_NONE, Cond = CondType.CT_Z };
             cpu.CpuInstructions[0x2A] = new CpuInstruction { Type = InType.IN_LD,   Mode = AddrMode.AM_R_HLI,   Reg1 = RegType.RT_A,    Reg2 = RegType.RT_HL };
+            cpu.CpuInstructions[0x2C] = new CpuInstruction { Type = InType.IN_INC,  Mode = AddrMode.AM_R,       Reg1 = RegType.RT_L };
             cpu.CpuInstructions[0x2E] = new CpuInstruction { Type = InType.IN_LD,   Mode = AddrMode.AM_R_D8,    Reg1 = RegType.RT_L };
 
             //-3X
             cpu.CpuInstructions[0x30] = new CpuInstruction { Type = InType.IN_JR,   Mode = AddrMode.AM_D8,      Reg1 = RegType.RT_NONE, Reg2 = RegType.RT_NONE, Cond = CondType.CT_NC };
             cpu.CpuInstructions[0x31] = new CpuInstruction { Type = InType.IN_LD,   Mode = AddrMode.AM_R_D16,   Reg1 = RegType.RT_SP };
             cpu.CpuInstructions[0x32] = new CpuInstruction { Type = InType.IN_LD,   Mode = AddrMode.AM_HLD_R,   Reg1 = RegType.RT_HL,   Reg2 = RegType.RT_A };
+            cpu.CpuInstructions[0x33] = new CpuInstruction { Type = InType.IN_INC,  Mode = AddrMode.AM_R,       Reg1 = RegType.RT_SP };
+            cpu.CpuInstructions[0x34] = new CpuInstruction { Type = InType.IN_INC,  Mode = AddrMode.AM_MR,      Reg1 = RegType.RT_HL };
             cpu.CpuInstructions[0x35] = new CpuInstruction { Type = InType.IN_DEC,  Mode = AddrMode.AM_R,       Reg1 = RegType.RT_HL };
             cpu.CpuInstructions[0x36] = new CpuInstruction { Type = InType.IN_LD,   Mode = AddrMode.AM_MR_D8,   Reg1 = RegType.RT_HL };
             cpu.CpuInstructions[0X38] = new CpuInstruction { Type = InType.IN_JR,   Mode = AddrMode.AM_D8,      Reg1 = RegType.RT_NONE, Reg2 = RegType.RT_NONE, Cond = CondType.CT_C };
             cpu.CpuInstructions[0x3A] = new CpuInstruction { Type = InType.IN_LD,   Mode = AddrMode.AM_R_HLD,   Reg1 = RegType.RT_A,    Reg2 = RegType.RT_HL };
+            cpu.CpuInstructions[0x3C] = new CpuInstruction { Type = InType.IN_INC,  Mode = AddrMode.AM_R,       Reg1 = RegType.RT_A };
             cpu.CpuInstructions[0x3E] = new CpuInstruction { Type = InType.IN_LD,   Mode = AddrMode.AM_R_D8,    Reg1 = RegType.RT_A };
 
             //-4X

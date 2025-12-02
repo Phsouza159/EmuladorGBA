@@ -49,15 +49,14 @@ namespace EmuladorGBA.Business.Process
                 this.FecthData();
 
                 Console.WriteLine(
-                    $"Ticekt {this.Tickets, -5} | PC {pc:X4}: {this.InstName(this.Instruction.Type),-7} | " +
-                    $"({this.CpuOpeCode:X2} {this.Bus.Read((ushort)(pc + 1)):X2} {this.Bus.Read((ushort)(pc + 2)):X2}) " +
+                    $"* OK Ticekt {this.Tickets, -5} | PC {pc:X4}: {this.InstName(this.Instruction.Type),-7} | " +
+                    $"({this.CpuOpeCode:X2} {this.Bus.Read((ushort)(pc + 1)):X2} {this.Bus.Read((ushort)(pc + 2)):X2}) | " +
                     $"AF: {this.CpuRegisters.A:X2}{this.CpuRegisters.F:X2} " +
-                    $"BC: {this.CpuRegisters.B:X2}{this.CpuRegisters.C:X2} " +
-                    $"DE: {this.CpuRegisters.D:X2}{this.CpuRegisters.E:X2} " +
-                    $"HL: {this.CpuRegisters.H:X2}{this.CpuRegisters.L:X2} " +
-                    $"SP: {this.CpuRegisters.SP:X2} " 
+                    $"- BC: {this.CpuRegisters.B:X2}{this.CpuRegisters.C:X2} " +
+                    $"- DE: {this.CpuRegisters.D:X2}{this.CpuRegisters.E:X2} " +
+                    $"- HL: {this.CpuRegisters.H:X2}{this.CpuRegisters.L:X2} " +
+                    $"- SP: {this.CpuRegisters.SP.ToString("X2"), -4} " 
                 );
-
 
                 if (this.Instruction.IsEmpty())
                 {

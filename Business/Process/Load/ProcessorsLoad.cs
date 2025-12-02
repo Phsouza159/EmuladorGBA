@@ -23,6 +23,9 @@ namespace EmuladorGBA.Business.Process.Load
             cpu.Processors[(short)InType.IN_RET]    = cpu.PROC_RET;
             cpu.Processors[(short)InType.IN_RETI]   = cpu.PROC_RETI;
             cpu.Processors[(short)InType.IN_RST]    = cpu.PROC_RST;
+            cpu.Processors[(short)InType.IN_DEC]    = cpu.PROC_DEC;
+            cpu.Processors[(short)InType.IN_INC]    = cpu.PROC_INC;
+
         }
     }
 }
