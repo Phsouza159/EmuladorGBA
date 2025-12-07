@@ -34,7 +34,7 @@ namespace EmuladorGBA.Business
 
         private ICpu Cpu { get; set; }
 
-        private bool IsLog = false;
+        private bool IsLog = true;
 
         #region READ
 
