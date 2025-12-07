@@ -60,7 +60,7 @@ namespace EmuladorGBA
             int sleepTime = 10;
             this.Running = true;
             this.Paused = false;
-           // this.MaxTicketBreak = 0x0010;
+            this.MaxTicketBreak = 0x0022;
 
             Console.WriteLine("--------------- RUNNING....");
 

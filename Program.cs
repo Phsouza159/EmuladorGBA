@@ -3,6 +3,9 @@
 using EmuladorGBA;
 
 
+// CLEAR
+Console.Clear();
+
 string pathRom = string.Empty;
 
 if (args.Length > 0)

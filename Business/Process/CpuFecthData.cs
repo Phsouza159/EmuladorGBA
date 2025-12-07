@@ -148,7 +148,7 @@ namespace EmuladorGBA.Business.Process
 
                 case AddrMode.AM_A8_R:
 
-                    cpu.SetMemoryAdressDest(Convert.ToUInt16(cpu.Bus.Read(cpu.CpuRegisters.PC) | 0xFF00));
+                    cpu.SetMemoryAdressDest((ushort)(cpu.Bus.Read(cpu.CpuRegisters.PC) | 0xFF00));
                     cpu.DestIsMemory = true;
                     cpu.Cycles(1);
                     cpu.CpuRegisters.IncrementPC();
@@ -209,13 +209,12 @@ namespace EmuladorGBA.Business.Process
                     return;
 
                 case AddrMode.AM_R_A16:
-
+                    
                     pc = cpu.CpuRegisters.PC;
                     lo = cpu.Bus.Read(pc);
                     cpu.Cycles(1);
 
-                    pc += 1;
-                    hi = cpu.Bus.Read(pc);
+                    hi = cpu.Bus.Read((ushort)(pc + 1));
                     cpu.Cycles(1);
 
                     adress = Convert.ToUInt16(lo | (hi << 8));
