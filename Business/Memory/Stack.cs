@@ -25,10 +25,14 @@ namespace EmuladorGBA.Business.Memory
             throw ExceptionsUtil.NotSupportedCpu();
         }
 
-        public void Push(ushort data)
+        public void Push16Bits(ushort data)
         {
+            // TODO - VALIDAR INVERSAO
             this.Push((byte)((data >> 8) & 0xFF));
-            this.Push((byte)(data  & 0xFF));
+            this.Push((byte)(data & 0xFF));
+
+            //this.Push((byte)(data & 0xFF));
+            //this.Push((byte)((data >> 8) & 0xFF));
         }
 
         public byte Pop()
@@ -37,7 +41,7 @@ namespace EmuladorGBA.Business.Memory
             {
                 ushort sp = cpu.CpuRegisters.SP;
                 cpu.CpuRegisters.IncrementSP();
-                return cpu.Bus.Read(sp);
+                return cpu.Bus.Read(cpu.CpuRegisters.SP);
             }
 
             throw ExceptionsUtil.NotSupportedCpu();

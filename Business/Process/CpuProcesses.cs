@@ -11,6 +11,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Devices.WiFi;
 
 namespace EmuladorGBA.Business.Process
 {
@@ -38,7 +39,7 @@ namespace EmuladorGBA.Business.Process
 
         internal byte CpuOpeCode { get; set; }
 
-        internal ushort MemoryAdressDest { get; set; }
+        internal ushort MemoryAdressDest { get; private set; }
 
         internal bool DestIsMemory { get; set; }
 
@@ -71,6 +72,16 @@ namespace EmuladorGBA.Business.Process
 
             proc.Invoke();
         }
+
+        #region SET MEMOMRY DEST
+
+        internal void SetMemoryAdressDest(ushort value)
+        {
+            this.MemoryAdressDest = value;
+            //Console.WriteLine($"* SET MEMORY DESTI: '{value.ToString("X2"), 4}'");
+        }
+
+        #endregion
 
         #region REGISTER IE
 
@@ -114,11 +125,13 @@ namespace EmuladorGBA.Business.Process
                 if(isPushPC)
                 {
                     this.Cycles(2);
-                    this.Stack.Push(this.CpuRegisters.PC);
+                    this.Stack.Push16Bits(this.CpuRegisters.PC);
                 }
 
                 this.CpuRegisters.SetRegisterPC(address);
                 this.Cycles(1);
+
+                Console.WriteLine($"* GOTO ADDRESS: {address}");
             }
         }
 
@@ -138,7 +151,7 @@ namespace EmuladorGBA.Business.Process
 
         internal void PROC_JR()
         {
-            byte rel = (byte)(this.FetchedData & 0xFF);
+            sbyte rel = (sbyte)(this.FetchedData & 0xFF); // signed offset
             ushort address = (ushort)(this.CpuRegisters.PC + rel);
 
             // AUX JUMP R
@@ -184,7 +197,7 @@ namespace EmuladorGBA.Business.Process
                 byte hi = this.Stack.Pop();
                 this.Cycles(1);
 
-                ushort value = (ushort)((hi << 8) | lo);
+                ushort value = Convert.ToUInt16(((hi << 8) | lo));
                 this.CpuRegisters.SetRegisterPC(value);
 
                 this.Cycles(1);
@@ -227,14 +240,16 @@ namespace EmuladorGBA.Business.Process
                 if(this.DestIsMemory)
                 {
                     //if 16 bit register...
-                    if (this.Instruction.Is16Bits())
+                    if (this.Instruction.Reg2.Is16Bits())
                     {
                         this.Cycles(1);
                         this.Bus.WriteB16(this.MemoryAdressDest, this.FetchedData);
                     }
                     else
                         this.Bus.Write(this.MemoryAdressDest, (byte)(this.FetchedData));
-
+                    
+                    //TODO: VALIDAR
+                    this.Cycles(1);
                     return;
                 }
 
@@ -243,13 +258,13 @@ namespace EmuladorGBA.Business.Process
                     int hflag = ((cpu.CpuReadRegister(this.Instruction.Reg2) & 0xF)
                             + (this.FetchedData & 0xF)) >= 0x10 ? 1 : 0;
 
-                    int cflag = ((cpu.CpuReadRegister(this.Instruction.Reg2) & 0xF)
-                                + (this.FetchedData & 0xF)) >= 0x100 ? 1 : 0;
+                    int cflag = ((cpu.CpuReadRegister(this.Instruction.Reg2) & 0xFF)
+                                + (this.FetchedData & 0xFF)) >= 0x100 ? 1 : 0;
 
                     cpu.CpuSetFlags(0, 0, hflag, cflag);
                     cpu.CpuWriteRegister(
                         this.Instruction.Reg1
-                        , (ushort)(cpu.CpuReadRegister(this.Instruction.Reg2) + ((byte)this.FetchedData))
+                        , (ushort)(cpu.CpuReadRegister(this.Instruction.Reg2) + ((sbyte)this.FetchedData))
                     );
 
                     return;
@@ -257,6 +272,28 @@ namespace EmuladorGBA.Business.Process
 
                 cpu.CpuWriteRegister(this.Instruction.Reg1 , this.FetchedData);
             }
+        }
+
+        #endregion
+
+        #region PROC LDH
+
+        internal void PROC_LDH()
+        {
+            if (this is Cpu cpu)
+            {
+                if (cpu.Instruction.Reg1 == RegType.RT_A)
+                    cpu.CpuWriteRegister(cpu.Instruction.Reg1, cpu.Bus.Read((ushort)(0xFF00 | cpu.FetchedData)));
+               
+                else
+                    cpu.Bus.Write(this.MemoryAdressDest, cpu.CpuRegisters.A);
+
+                this.Cycles(1);
+
+                return;
+            }
+
+            throw ExceptionsUtil.NotSupportedCpu();
         }
 
         #endregion
@@ -270,7 +307,7 @@ namespace EmuladorGBA.Business.Process
             this.CpuRegisters.SetRegisterA(a);
 
             // TODO: VALIDAR 
-            int z = this.CpuRegisters.A == 0 ? 0 : 1;
+            int z = this.CpuRegisters.A == 0 ? 1 : 0;
             this.CpuSetFlags(z, 0, 0, 0);
         }
 
@@ -285,34 +322,15 @@ namespace EmuladorGBA.Business.Process
 
         #endregion
 
-        #region PROC LDH
-
-        internal void PROC_LDH()
-        {
-            if (this.Instruction.Reg1 == RegType.RT_A && this is Cpu cpu)
-            {
-                cpu.CpuWriteRegister(this.Instruction.Reg1, this.Bus.Read((ushort)(0xFF00 | this.FetchedData)));
-            }
-            else
-            {
-                // this.Bus.Write((ushort)(0xFF00 | this.FetchedData), this.CpuRegisters.A);
-                this.Bus.Write(this.MemoryAdressDest, this.CpuRegisters.A);
-            }
-
-            this.Cycles(1);
-        }
-
-        #endregion
-
         #region PROC POP
 
         public void PROC_POP()
         {
             if(this is Cpu cpu)
             {
-                ushort lo = this.Stack.Pop();
+                byte lo = this.Stack.Pop();
                 this.Cycles(1);
-                ushort hi = this.Stack.Pop();
+                byte hi = this.Stack.Pop();
                 this.Cycles(1);
 
                 ushort value = (ushort)((hi << 8) | lo);
@@ -365,7 +383,7 @@ namespace EmuladorGBA.Business.Process
                 // INCREMENT
                 value += 1;
 
-                if(cpu.Instruction.Is16Bits())
+                if(cpu.Instruction.Reg1.Is16Bits())
                 {
                     cpu.Cycles(1);
                 }
@@ -403,7 +421,7 @@ namespace EmuladorGBA.Business.Process
                 // INCREMENT
                 value += 1;
 
-                if (cpu.Instruction.Is16Bits())
+                if (cpu.Instruction.Reg1.Is16Bits())
                 {
                     cpu.Cycles(1);
                 }
@@ -436,8 +454,140 @@ namespace EmuladorGBA.Business.Process
         {
             if(this is Cpu cpu)
             {
-                // TODO...
+                int value = cpu.CpuReadRegister(cpu.Instruction.Reg1) + (char)cpu.FetchedData;
+
+                if(cpu.Instruction.Reg1.Is16Bits())
+                {
+                    cpu.Cycles(1);
+                }
+
+                if(cpu.Instruction.Reg1 == RegType.RT_SP)
+                    value = cpu.CpuReadRegister(cpu.Instruction.Reg1) + (char)cpu.FetchedData;
+
+                int z = (value & 0xFF) == 0 ? 1 : 0; ;
+                int h = (cpu.CpuReadRegister(cpu.Instruction.Reg1) & 0xF) + (cpu.FetchedData & 0xF) >= 0x10 ? 1 : 0; ;
+                int c = (cpu.CpuReadRegister(cpu.Instruction.Reg1) & 0xFF) + (cpu.FetchedData & 0xFF) >= 0x100 ? 1 : 0; ;
+
+                if (cpu.Instruction.Reg1.Is16Bits())
+                {
+                    z = 0;
+                    h = (cpu.CpuReadRegister(cpu.Instruction.Reg1) & 0xFFF) + (cpu.FetchedData & 0xFFF) >= 0x1000 ? 1 : 0; ;
+                    int n  = (cpu.CpuReadRegister(cpu.Instruction.Reg1)) + (cpu.FetchedData);
+                    c = n >= 0x10000 ? 1 : 0;
+                }
+
+                if(cpu.Instruction.Reg1 == RegType.RT_SP)
+                {
+                    z = -1;
+                    h = (cpu.CpuReadRegister(cpu.Instruction.Reg1) & 0xF) + (cpu.FetchedData & 0xF) >= 0x10 ? 1 : 0; ;
+                    c = (cpu.CpuReadRegister(cpu.Instruction.Reg1) & 0xFF) + (cpu.FetchedData & 0xFF) >= 0x100 ? 1 : 0; ;
+                }
+
+                cpu.CpuWriteRegister(cpu.Instruction.Reg1, (ushort)(value & 0xFFFF));
+                cpu.CpuSetFlags(z, n : 0, h, c);
+                
                 return;
+            }
+
+            throw ExceptionsUtil.NotSupportedCpu();
+        }
+
+        #endregion
+
+        #region PROC ADC
+
+        #endregion
+
+        #region PROC SUB
+
+        public void PROC_SUB()
+        {
+            if(this is Cpu cpu)
+            {
+                int value = cpu.CpuReadRegister(cpu.Instruction.Reg1) - cpu.FetchedData;
+
+                int z = 0;
+                int h = (cpu.CpuReadRegister(cpu.Instruction.Reg1) & 0xF) - (cpu.FetchedData & 0xF) < 0x10 ? 1 : 0; ;
+                int c = cpu.CpuReadRegister(cpu.Instruction.Reg1) + (cpu.FetchedData & 0xFF) < 0 ? 1 : 0; ;
+
+                cpu.CpuWriteRegister(cpu.Instruction.Reg1, (ushort)value);
+                cpu.CpuSetFlags(z, n : 1, h, c);
+
+                return;
+            }
+
+            throw ExceptionsUtil.NotSupportedCpu();
+        }
+
+        #endregion
+
+        #region PROC SBC
+
+        public void PROC_SBC()
+        {
+            if (this is Cpu cpu)
+            {
+                ushort value = cpu.FetchedData;
+                value += Convert.ToUInt16(CPU_FLAG_C);
+
+                int z = cpu.CpuReadRegister(cpu.Instruction.Reg1) - value < 0 ? 1 : 0;
+                int h = ((cpu.CpuReadRegister(cpu.Instruction.Reg1) & 0xF) 
+                        - (cpu.FetchedData & 0xF)
+                        - (Convert.ToInt32(CPU_FLAG_C))) < 0 ? 1 : 0; 
+                int c = (cpu.CpuReadRegister(cpu.Instruction.Reg1) 
+                        - cpu.FetchedData
+                        - Convert.ToInt32(CPU_FLAG_C)) < 0 ? 1 : 0;
+
+                cpu.CpuWriteRegister(cpu.Instruction.Reg1, (ushort)(cpu.CpuReadRegister(cpu.Instruction.Reg1) - value));
+                cpu.CpuSetFlags(z, n: 1, h, c);
+
+                return;
+            }
+
+            throw ExceptionsUtil.NotSupportedCpu();
+
+        }
+
+        #endregion
+
+        #region PROC CPL
+
+        public void PROC_CPL()
+        {
+            if(this is Cpu cpu)
+            {
+                byte a = cpu.CpuRegisters.A;
+                a = (byte)~a;
+
+                cpu.CpuRegisters.SetRegisterA(a);
+                cpu.CpuSetFlags(-1, 1, 1, -1);
+
+                return;
+            }
+
+            throw ExceptionsUtil.NotSupportedCpu();
+        }
+
+        #endregion
+
+        #region PROC ADC
+
+        public void PROC_ADC()
+        {
+            if(this is Cpu cpu)
+            {
+                ushort u = cpu.FetchedData;
+                ushort a = cpu.CpuRegisters.A;
+                ushort flagC = Convert.ToUInt16(CPU_FLAG_C);
+
+                cpu.CpuRegisters.SetRegisterA((byte)((a + u + flagC) & 0xFF));
+
+                int z = this.CpuRegisters.A == 0 ? 1 : 0;
+                int n = 0;
+                int h = (a & 0xF) + (u & 0xF) + flagC > 0xF ? 1 : 0;
+                int c = a + u + flagC > 0xFF ? 1 : 0;
+
+                cpu.CpuSetFlags(z, n, h, flagC);
             }
 
             throw ExceptionsUtil.NotSupportedCpu();
@@ -459,32 +609,33 @@ namespace EmuladorGBA.Business.Process
                 case CondType.CT_NC: return !c;
                 case CondType.CT_Z: return z;
                 case CondType.CT_NZ: return !z;
-            }
 
-            return false;
+                default: return false;
+            }
         }
 
         // TODO: VALIDAR 
+
         internal void CpuSetFlags(int z, int n, int h, int c)
         {
             if (z != -1)
             {
-                BitHelper.BitSet(ref this.CpuRegisters.F, 7, z == 1);
+                this.CpuRegisters.SetRegisterF(BitHelper.BitSet(this.CpuRegisters.F, 7, z));
             }
 
             if (n != -1)
             {
-                BitHelper.BitSet(ref this.CpuRegisters.F, 6, n == 1);
+                this.CpuRegisters.SetRegisterF(BitHelper.BitSet(this.CpuRegisters.F, 6, n));
             }
 
             if (h != -1)
             {
-                BitHelper.BitSet(ref this.CpuRegisters.F, 5, h == 1);
+                this.CpuRegisters.SetRegisterF(BitHelper.BitSet(this.CpuRegisters.F, 5, h));
             }
 
             if (c != -1)
             {
-                BitHelper.BitSet(ref this.CpuRegisters.F, 4, c == 1);
+                this.CpuRegisters.SetRegisterF(BitHelper.BitSet(this.CpuRegisters.F, 4, c));
             }
         }
 

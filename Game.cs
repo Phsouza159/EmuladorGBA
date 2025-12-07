@@ -22,8 +22,8 @@ namespace EmuladorGBA
                 HRAM_Length = MemoryConfig.MEMORY_HRAM_LENGTH
             };
 
+            this.Cpu = Cpu.Create();
             this.Card = new Card();
-            this.Cpu  = new Cpu();
             this.Cpu.Bus = new Bus(this.Card, new RamMemory(memoryMap), this.Cpu);
         }
 
@@ -32,6 +32,8 @@ namespace EmuladorGBA
 
         public bool Running { get; private set; }
         public bool Paused { get; private set; }
+
+        public decimal? MaxTicketBreak { get; set; }
 
         internal void LoadRomFromPath(string pathRom)
         {
@@ -55,9 +57,10 @@ namespace EmuladorGBA
 
         internal void Start()
         {
-            int sleepTime = 50;
+            int sleepTime = 10;
             this.Running = true;
             this.Paused = false;
+           // this.MaxTicketBreak = 0x0010;
 
             Console.WriteLine("--------------- RUNNING....");
 
@@ -78,6 +81,9 @@ namespace EmuladorGBA
 
                 //TODO...
                 Thread.Sleep(sleepTime);
+
+                if (this.MaxTicketBreak.HasValue && this.Cpu.Tickets > this.MaxTicketBreak)
+                    break;
 
                 // TEST LIMIT CPU TICKETS
                 //if (this.Cpu.Tickets == 50) break;

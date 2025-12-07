@@ -14,9 +14,8 @@ namespace EmuladorGBA.Business.Process.Load
             cpu.Processors[(short)InType.IN_LD]     = cpu.PROC_LD;
             cpu.Processors[(short)InType.IN_LDH]    = cpu.PROC_LDH;
             cpu.Processors[(short)InType.IN_JP]     = cpu.PROC_JP;
-            cpu.Processors[(short)InType.IN_JR]     = cpu.PROC_JR;
             cpu.Processors[(short)InType.IN_DI]     = cpu.PROC_DI;
-            cpu.Processors[(short)InType.IN_XOR]    = cpu.PROC_XOR;
+            cpu.Processors[(short)InType.IN_JR]     = cpu.PROC_JR;
             cpu.Processors[(short)InType.IN_POP]    = cpu.PROC_POP;
             cpu.Processors[(short)InType.IN_PUSH]   = cpu.PROC_PUSH;
             cpu.Processors[(short)InType.IN_CALL]   = cpu.PROC_CALL;
@@ -25,7 +24,13 @@ namespace EmuladorGBA.Business.Process.Load
             cpu.Processors[(short)InType.IN_RST]    = cpu.PROC_RST;
             cpu.Processors[(short)InType.IN_DEC]    = cpu.PROC_DEC;
             cpu.Processors[(short)InType.IN_INC]    = cpu.PROC_INC;
+            cpu.Processors[(short)InType.IN_ADD]    = cpu.PROC_ADD;
+            cpu.Processors[(short)InType.IN_ADC]    = cpu.PROC_ADC;
+            cpu.Processors[(short)InType.IN_SUB]    = cpu.PROC_SUB;
+            cpu.Processors[(short)InType.IN_SBC]    = cpu.PROC_SBC;
+            cpu.Processors[(short)InType.IN_XOR]    = cpu.PROC_XOR;
 
+            cpu.Processors[(short)InType.IN_CPL]    = cpu.PROC_CPL;
         }
     }
 }

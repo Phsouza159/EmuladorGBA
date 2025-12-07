@@ -11,7 +11,8 @@ namespace EmuladorGBA.Business.Interface
         byte Pop();
         ushort Pop16Bits();
 
-        void Push(ushort data);
         void Push(byte data);
+
+        void Push16Bits(ushort data);
     }
 }

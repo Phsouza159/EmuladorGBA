@@ -22,38 +22,7 @@ namespace EmuladorGBA.Business.Memory
             this.MemoryMap = memoryMap;
         }
 
-        #region READ
-
-        public byte ReadMemoryWRam(ushort address)
-        {
-            address -= 0xC000;
-
-            if ((int)address > this.MemoryMap.WRAM_Length)
-            {
-                Console.WriteLine($"Registro WRITE WRAM Fora do registro: {address:X2}");
-                return 0;
-            }
-
-            return this.WRAM[address];
-        }
-
-        public byte ReadMemoryHRam(ushort address)
-        {
-            address -= 0xFF80;
-
-            if ((int)address > this.MemoryMap.HRAM_Length)
-            {
-                Console.WriteLine($"Registro WRITE HRAM Fora do registro: {address:X2}");
-                return 0;
-            }
-
-
-            return this.HRAM[address];
-        }
-
-        #endregion
-
-        #region WRITE
+        #region W-RAM
 
         public void WriteMemoryWRam(ushort address, byte value)
         {
@@ -68,17 +37,47 @@ namespace EmuladorGBA.Business.Memory
             this.WRAM[address] = value;
         }
 
+        public byte ReadMemoryWRam(ushort address)
+        {
+            address -= 0xC000;
+
+            if ((int)address > this.MemoryMap.WRAM_Length)
+            {
+                Console.WriteLine($"Registro WRITE WRAM Fora do registro: {address:X2}");
+                throw new ArgumentException($"READ RAM IN {address:X2} ERRO");
+            }
+
+            return this.WRAM[address];
+        }
+
+        #endregion
+
+        #region H-RAM
+    
         public void WriteMemoryHRam(ushort address, byte value)
         {
             address -= 0xFF80;
 
             if ((int)address > this.MemoryMap.HRAM_Length)
             {
-                Console.WriteLine($"Registro WRITE WRAM Fora do registro: {address:X2}");
+                Console.WriteLine($"Registro WRITE HRAM Fora do registro: {address:X2}");
                 return;
             }
 
             this.HRAM[address] = value;
+        }
+        public byte ReadMemoryHRam(ushort address)
+        {
+            address -= 0xFF80;
+
+            if ((int)address > this.MemoryMap.HRAM_Length)
+            {
+                Console.WriteLine($"Registro WRITE HRAM Fora do registro: {address:X2}");
+                return 0;
+            }
+
+
+            return this.HRAM[address];
         }
 
         #endregion

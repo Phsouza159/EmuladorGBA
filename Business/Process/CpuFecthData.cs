@@ -12,12 +12,12 @@ namespace EmuladorGBA.Business.Process
     {
         internal static void FecthData(this Cpu cpu)
         {
-            ushort adress = 0;
+            ushort adress;
             ushort pc;
-            byte lo;
+            ushort lo;
             ushort hi;
 
-            cpu.MemoryAdressDest = 0;
+            cpu.SetMemoryAdressDest(0);
             cpu.DestIsMemory = false;
 
             if (cpu.Instruction.IsEmpty())
@@ -53,20 +53,22 @@ namespace EmuladorGBA.Business.Process
                     cpu.Cycles(1);
 
                     cpu.FetchedData = (ushort)(lo | (hi << 8));
-                    cpu.CpuRegisters.SetRegisterPC((ushort)(pc + 2));
+                    
+                    pc += 2;
+                    cpu.CpuRegisters.SetRegisterPC(pc);
 
                     return;
 
                 case AddrMode.AM_MR_R:
 
                     cpu.FetchedData = cpu.CpuReadRegister(cpu.Instruction.Reg2);
-                    cpu.MemoryAdressDest = cpu.CpuReadRegister(cpu.Instruction.Reg1);
+                    cpu.SetMemoryAdressDest(cpu.CpuReadRegister(cpu.Instruction.Reg1));
                     cpu.DestIsMemory = true;
 
                     if(cpu.Instruction.Reg1 == RegType.RT_C)
                     {
-                        adress = 0xFF00; // DEFAULT AM_MR_R
-                        cpu.MemoryAdressDest = (ushort)(cpu.MemoryAdressDest | adress);
+                        //adress = 0xFF00; // DEFAULT AM_MR_R
+                        cpu.SetMemoryAdressDest((ushort)(cpu.MemoryAdressDest | 0xFF00));
                     }
 
                     return;
@@ -75,7 +77,7 @@ namespace EmuladorGBA.Business.Process
 
                     adress = cpu.CpuReadRegister(cpu.Instruction.Reg2);
 
-                    if (cpu.Instruction.Reg1 == RegType.RT_C)
+                    if (cpu.Instruction.Reg2 == RegType.RT_C)
                     {
                         adress = (ushort)(adress | 0xFF00); // DEFAULT AM_R_MR
                     }
@@ -90,8 +92,11 @@ namespace EmuladorGBA.Business.Process
 
                     cpu.FetchedData = cpu.Bus.Read(cpu.CpuReadRegister(cpu.Instruction.Reg2));
                     cpu.Cycles(1);
+                   
+                    ushort hli = cpu.CpuReadRegister(RegType.RT_HL);
+                    hli += 1;
 
-                    cpu.CpuWriteRegister(RegType.RT_HL, (ushort)(cpu.CpuReadRegister(RegType.RT_HL) + 1));
+                    cpu.CpuWriteRegister(RegType.RT_HL, hli);
 
                     return;
 
@@ -100,27 +105,36 @@ namespace EmuladorGBA.Business.Process
                     cpu.FetchedData = cpu.Bus.Read(cpu.CpuReadRegister(cpu.Instruction.Reg2));
                     cpu.Cycles(1);
 
-                    cpu.CpuWriteRegister(RegType.RT_HL, (ushort)(cpu.CpuReadRegister(RegType.RT_HL) - 1));
+                    ushort hld = cpu.CpuReadRegister(RegType.RT_HL);
+                    hld -= 1;
+
+                    cpu.CpuWriteRegister(RegType.RT_HL, hld);
 
                     return;
 
                 case AddrMode.AM_HLI_R:
 
                     cpu.FetchedData = cpu.CpuReadRegister(cpu.Instruction.Reg2);
-                    cpu.MemoryAdressDest = cpu.CpuReadRegister(cpu.Instruction.Reg1);
+                    cpu.SetMemoryAdressDest(cpu.CpuReadRegister(cpu.Instruction.Reg1));
                     cpu.DestIsMemory = true;
 
-                    cpu.CpuWriteRegister(RegType.RT_HL, (ushort)(cpu.CpuReadRegister(RegType.RT_HL) + 1));
+                    ushort hliR = cpu.CpuReadRegister(RegType.RT_HL);
+                    hliR += 1;
+
+                    cpu.CpuWriteRegister(RegType.RT_HL, hliR);
 
                     return;
 
                 case AddrMode.AM_HLD_R:
 
                     cpu.FetchedData = cpu.Bus.Read(cpu.CpuReadRegister(cpu.Instruction.Reg2));
-                    cpu.MemoryAdressDest = cpu.Bus.Read(cpu.CpuReadRegister(cpu.Instruction.Reg1));
+                    cpu.SetMemoryAdressDest(cpu.Bus.Read(cpu.CpuReadRegister(cpu.Instruction.Reg1)));
                     cpu.DestIsMemory = true;
 
-                    cpu.CpuWriteRegister(RegType.RT_HL, (ushort)(cpu.CpuReadRegister(RegType.RT_HL) - 1));
+                    ushort hldR = cpu.CpuReadRegister(RegType.RT_HL);
+                    hldR -= 1;
+
+                    cpu.CpuWriteRegister(RegType.RT_HL, hldR);
 
                     return;
 
@@ -134,7 +148,7 @@ namespace EmuladorGBA.Business.Process
 
                 case AddrMode.AM_A8_R:
 
-                    cpu.MemoryAdressDest = (ushort)(cpu.Bus.Read(cpu.CpuRegisters.PC) | 0xFF00);
+                    cpu.SetMemoryAdressDest(Convert.ToUInt16(cpu.Bus.Read(cpu.CpuRegisters.PC) | 0xFF00));
                     cpu.DestIsMemory = true;
                     cpu.Cycles(1);
                     cpu.CpuRegisters.IncrementPC();
@@ -162,14 +176,16 @@ namespace EmuladorGBA.Business.Process
                     pc = cpu.CpuRegisters.PC;
                     lo = cpu.Bus.Read(pc);
                     cpu.Cycles(1);
-
-                    hi = cpu.Bus.Read((ushort)(pc + 1));
+                   
+                    pc += 1;
+                    hi = cpu.Bus.Read(pc);
                     cpu.Cycles(1);
 
-                    cpu.MemoryAdressDest = (ushort)(lo | (hi << 8));
+                    cpu.SetMemoryAdressDest(Convert.ToUInt16(lo | (hi << 8)));
                     cpu.DestIsMemory = true;
-
-                    cpu.CpuRegisters.SetRegisterPC((ushort)(pc + 2));
+                    
+                    pc += 2;
+                    cpu.CpuRegisters.SetRegisterPC(pc);
                     cpu.FetchedData = cpu.CpuReadRegister(cpu.Instruction.Reg2);
 
                     //cpu.FetchedData = (ushort)(lo | (hi << 8));
@@ -184,14 +200,14 @@ namespace EmuladorGBA.Business.Process
                     cpu.FetchedData = cpu.Bus.Read(cpu.CpuRegisters.PC);
                     cpu.Cycles(1);
                     cpu.CpuRegisters.IncrementPC();
-                    cpu.MemoryAdressDest = cpu.CpuReadRegister(cpu.Instruction.Reg1);
+                    cpu.SetMemoryAdressDest(cpu.CpuReadRegister(cpu.Instruction.Reg1));
                     cpu.DestIsMemory = true;
                     
                     return;
 
                 case AddrMode.AM_MR:
 
-                    cpu.MemoryAdressDest = cpu.CpuReadRegister(cpu.Instruction.Reg1);
+                    cpu.SetMemoryAdressDest(cpu.CpuReadRegister(cpu.Instruction.Reg1));
                     cpu.DestIsMemory = true;
                     cpu.FetchedData = cpu.CpuReadRegister(cpu.Instruction.Reg1);
                     cpu.Cycles(1);
@@ -204,11 +220,14 @@ namespace EmuladorGBA.Business.Process
                     lo = cpu.Bus.Read(pc);
                     cpu.Cycles(1);
 
-                    hi = cpu.Bus.Read((ushort)(pc + 1));
+                    pc += 1;
+                    hi = cpu.Bus.Read(pc);
                     cpu.Cycles(1);
 
-                    adress = (ushort)(lo | (hi << 8));
-                    cpu.CpuRegisters.SetRegisterPC((ushort)(pc + 2));
+                    adress = Convert.ToUInt16(lo | (hi << 8));
+
+                    pc += 2;
+                    cpu.CpuRegisters.SetRegisterPC(pc);
                     cpu.FetchedData = cpu.Bus.Read(adress);
                     cpu.Cycles(1);
 

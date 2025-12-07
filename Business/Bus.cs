@@ -34,12 +34,18 @@ namespace EmuladorGBA.Business
 
         private ICpu Cpu { get; set; }
 
+        private bool IsLog = false;
+
+        #region READ
+
         public byte Read(ushort address)
         {
+            byte value = 0;
+
             if (address < 0x8000)
             {
                 //ROM Data
-                return this.Cart.Read(address);
+                value = this.Cart.Read(address);
             } 
             else if (address < 0xA000)
             {
@@ -51,17 +57,17 @@ namespace EmuladorGBA.Business
             else if (address < 0xC000)
             {
                 // Cartridge RAM
-                return this.Cart.Read(address);
+                value = this.Cart.Read(address);
             }
             else if (address < 0xE000)
             {
                 // WRAM
-                return this.Memory.ReadMemoryWRam(address);
+                value = this.Memory.ReadMemoryWRam(address);
             }
             else if (address < 0xFE00)
             {
                 // RESERVED
-                return 0;
+                value = 0;
             }
             else if (address < 0xFEA0)
             {
@@ -74,9 +80,9 @@ namespace EmuladorGBA.Business
             else if (address < 0xFF00)
             {
                 // RESERVED
-                return 0;
+                value = 0;
             }
-            else if (address < 0xFE80)
+            else if (address < 0xFF80)
             {
                 // IO Registers
                 // TODO
@@ -86,22 +92,36 @@ namespace EmuladorGBA.Business
             else if (address == 0xFFFF)
             {
                 // CPU REGISTERS
-                return this.Cpu.CpuGetRegisterIE();
+                value = this.Cpu.CpuGetRegisterIE();
+            }
+            else
+            {
+                value = this.Memory.ReadMemoryHRam(address);
             }
 
-            return this.Memory.ReadMemoryHRam(address);
+            if(this.IsLog)
+                Console.WriteLine($"* READ  in '{address.ToString("X2"), 5}' VALUE '{value.ToString("X2"), 5}'");
+            
+            return value;
         }
 
         public ushort ReadB16(ushort address)
         {
-            ushort lo = this.Read(address);
-            ushort hi = this.Read((ushort)(address + 1));
+            byte lo = this.Read(address);
+            byte hi = this.Read((ushort)(address + 1));
 
             return (ushort)(lo | (hi << 8));
         }
 
+        #endregion
+
+        #region WRITE
+
         public void Write(ushort address, byte value)
         {
+
+            if (this.IsLog)
+                Console.WriteLine($"* WRITE in '{address.ToString("X2"),5}' VALUE '{value.ToString("X2"),5}'");
 
             if (address < 0x8000)
             {
@@ -112,7 +132,6 @@ namespace EmuladorGBA.Business
             {
                 // CHAR/MAP DATA 
                 // TODO
-                ConsoleUtil.ShowMensagemNotImplement();
                 Console.WriteLine($"Sem suporte para WRITE em CHAR/MAP DATA  {address:X2}");
             }
             else if (address < 0xC000)
@@ -133,19 +152,16 @@ namespace EmuladorGBA.Business
             {
                 // Object Attribute Memory
                 // TODO
-                ConsoleUtil.ShowMensagemNotImplement();
                 Console.WriteLine($"Sem suporte para WRITE em Object Attribute Memory {address:X2}");
-
             }
             else if (address < 0xFF00)
             {
                 // RESERVED
             }
-            else if (address < 0xFE80)
+            else if (address < 0xFF80)
             {
                 // IO Registers
                 // TODO
-                ConsoleUtil.ShowMensagemNotImplement();
                 Console.WriteLine($"Sem suporte para WRITE em IO Registers {address:X2}");
             }
             else if (address == 0xFFFF)
@@ -161,10 +177,12 @@ namespace EmuladorGBA.Business
 
         public void WriteB16(ushort address, ushort value)
         {
+            // high byte
             this.Cart.Write((ushort)(address + 1), (byte)((value >> 8) & 0xFF));
+            // low byte
             this.Cart.Write(address, (byte)(value & 0xFF));
-
-            Console.WriteLine($"Sem implementacao para WRITE em {address:X4} : Value {value:X4}");
         }
+
+        #endregion
     }
 }

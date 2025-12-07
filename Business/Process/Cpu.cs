@@ -10,7 +10,19 @@ namespace EmuladorGBA.Business.Process
 {
     internal class Cpu : CpuProcesses
     {
-        public Cpu()
+        private static Cpu ctx {  get; set; }
+
+        public static Cpu Create()
+        {
+            if(ctx is null)
+                ctx = new Cpu();
+
+            return ctx;
+        }
+
+        public static Cpu GetContext() => Cpu.ctx;
+
+        private Cpu()
         {
             this.CpuRegisters = new CpuRegisters();
             this.Stack = new Stack(this);
@@ -48,14 +60,28 @@ namespace EmuladorGBA.Business.Process
                 this.FetchInstruction();
                 this.FecthData();
 
+                byte f = this.CpuRegisters.F;
+
+                string flags = 
+                    $"{((f & (1 << 7)) != 0 ? 'Z' : '-')}" +
+                    $"{((f & (1 << 6)) != 0 ? 'N' : '-')}" +
+                    $"{((f & (1 << 5)) != 0 ? 'H' : '-')}" +
+                    $"{((f & (1 << 4)) != 0 ? 'C' : '-')}";
+
+
                 Console.WriteLine(
-                    $"* OK Ticekt {this.Tickets, -5} | PC {pc:X4}: {this.InstName(this.Instruction.Type),-7} | " +
+                    $"* OK Ticekt {this.Tickets.ToString("X8"), -5} | PC {pc:X4}: {this.InstName(this.Instruction.Type),-7} | " +
                     $"({this.CpuOpeCode:X2} {this.Bus.Read((ushort)(pc + 1)):X2} {this.Bus.Read((ushort)(pc + 2)):X2}) | " +
-                    $"AF: {this.CpuRegisters.A:X2}{this.CpuRegisters.F:X2} " +
-                    $"- BC: {this.CpuRegisters.B:X2}{this.CpuRegisters.C:X2} " +
+                    $"A: {this.CpuRegisters.A:X2} " +
+                    $"F: {flags} " +
+                    $" | BC: {this.CpuRegisters.B:X2}{this.CpuRegisters.C:X2} " +
                     $"- DE: {this.CpuRegisters.D:X2}{this.CpuRegisters.E:X2} " +
                     $"- HL: {this.CpuRegisters.H:X2}{this.CpuRegisters.L:X2} " +
-                    $"- SP: {this.CpuRegisters.SP.ToString("X2"), -4} " 
+                    $"- SP: {this.CpuRegisters.SP.ToString("X2"), -4} " +
+                    $"- M-DEST: {this.MemoryAdressDest.ToString("X2"), -4} " +
+                    $"- DATA: {this.FetchedData.ToString("X2"),-4} "
+
+
                 );
 
                 if (this.Instruction.IsEmpty())

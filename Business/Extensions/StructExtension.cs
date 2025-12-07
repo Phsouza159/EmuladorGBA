@@ -1,4 +1,5 @@
-﻿using EmuladorGBA.Business.Intruction;
+﻿using EmuladorGBA.Business.Enum;
+using EmuladorGBA.Business.Intruction;
 
 namespace EmuladorGBA.Business.Extensions
 {
@@ -10,9 +11,9 @@ namespace EmuladorGBA.Business.Extensions
             return item.Equals(default(Struct));
         }
 
-        public static bool Is16Bits(this CpuInstruction instruction)
+        public static bool Is16Bits(this RegType regtype)
         {
-            return instruction.Reg1 >= Enum.RegType.RT_AF;
+            return regtype >= Enum.RegType.RT_AF;
         }
     }
 }
