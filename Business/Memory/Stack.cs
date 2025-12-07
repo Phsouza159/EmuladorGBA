@@ -41,7 +41,7 @@ namespace EmuladorGBA.Business.Memory
             {
                 ushort sp = cpu.CpuRegisters.SP;
                 cpu.CpuRegisters.IncrementSP();
-                return cpu.Bus.Read(cpu.CpuRegisters.SP);
+                return cpu.Bus.Read(sp);
             }
 
             throw ExceptionsUtil.NotSupportedCpu();
