@@ -176,22 +176,16 @@ namespace EmuladorGBA.Business.Process
                     pc = cpu.CpuRegisters.PC;
                     lo = cpu.Bus.Read(pc);
                     cpu.Cycles(1);
-                   
-                    pc += 1;
-                    hi = cpu.Bus.Read(pc);
+
+                    hi = cpu.Bus.Read((ushort)(pc + 1));
                     cpu.Cycles(1);
 
                     cpu.SetMemoryAdressDest(Convert.ToUInt16(lo | (hi << 8)));
                     cpu.DestIsMemory = true;
-                    
+
                     pc += 2;
                     cpu.CpuRegisters.SetRegisterPC(pc);
                     cpu.FetchedData = cpu.CpuReadRegister(cpu.Instruction.Reg2);
-
-                    //cpu.FetchedData = (ushort)(lo | (hi << 8));
-                    //cpu.DestIsMemory = true;
-                    //cpu.CpuRegisters.SetRegisterPC((ushort)(pc + 2));
-                    //cpu.FetchedData = cpu.CpuReadRegister(cpu.Instruction.Reg2);
 
                     return;
 
