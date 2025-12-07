@@ -81,28 +81,28 @@ namespace EmuladorGBA.Business.Process
 
                 case RegType.RT_AF:
                     {
-                        ushort af = value.Reverse(isReverseAtive: false); // Reverse
+                        ushort af = value.Reverse(); // Reverse
                         cpu.CpuRegisters.SetRegisterAF(af);
                     }
                     break;
 
                 case RegType.RT_BC:
                     {
-                        ushort bc = value.Reverse(isReverseAtive: false); //reverse
+                        ushort bc = value.Reverse(); //reverse
                         cpu.CpuRegisters.SetRegisterDE(bc);
                     }
                     break;
 
                 case RegType.RT_DE:
                     {
-                        ushort de = value.Reverse(isReverseAtive: false); // reverse
+                        ushort de = value.Reverse(); // reverse
                         cpu.CpuRegisters.SetRegisterDE(de);
                     }
                     break;
 
                 case RegType.RT_HL:
                     {
-                        ushort hl = value.Reverse(isReverseAtive: false); // Reverse
+                        ushort hl = value.Reverse(); // Reverse
                         cpu.CpuRegisters.SetRegisterHL(hl);
                     }
                   

@@ -9,11 +9,11 @@ namespace EmuladorGBA.Business
 {
     internal static class BitHelper
     {
-        static bool _isReverseAtive = true;
+        static bool _isReverseDesative = true;
         
         public static ushort Reverse(this ushort value, bool isReverseAtive = true)
         {
-            if (!BitHelper._isReverseAtive && isReverseAtive)
+            if (BitHelper._isReverseDesative || !isReverseAtive)
                 return value;
 
             return (ushort)(
