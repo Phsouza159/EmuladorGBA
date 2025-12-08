@@ -17,6 +17,8 @@ else
     pathRom = @"C:\_git\EmuladorGBA\Roms\cpu_instrs.gb";
 }
 
+Console.WriteLine($"LOAD in {pathRom}");
+
 try
 {
     Game game = new();

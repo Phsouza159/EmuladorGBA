@@ -121,8 +121,10 @@ namespace EmuladorGBA.Business.Process
         internal void GOTO_ADDR (ushort address, bool isPushPC)
         {
             if (this.CheckCond())
-            { 
-                if(isPushPC)
+            {
+                ushort pc = this.CpuRegisters.PC;
+
+                if (isPushPC)
                 {
                     this.Cycles(2);
                     this.Stack.Push16Bits(this.CpuRegisters.PC);
@@ -131,7 +133,7 @@ namespace EmuladorGBA.Business.Process
                 this.CpuRegisters.SetRegisterPC(address);
                 this.Cycles(1);
 
-                Console.WriteLine($"* GOTO ADDRESS: {address}");
+                Console.WriteLine($"* GOTO ADDRESS: '{pc.ToString("X2"),4}' TO '{address.ToString("X2"),4}'");
             }
         }
 

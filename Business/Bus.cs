@@ -52,7 +52,7 @@ namespace EmuladorGBA.Business
                 // CHAR/MAP DATA 
                 // TODO
                 ConsoleUtil.ShowMensagemNotImplement();
-                Console.WriteLine($"Sem suporte para leitura em {address:4X}");
+                Console.WriteLine($"Sem suporte para leitura em {address:2X}");
             }
             else if (address < 0xC000)
             {
@@ -74,7 +74,7 @@ namespace EmuladorGBA.Business
                 // Object Attribute Memory
                 // TODO
                 ConsoleUtil.ShowMensagemNotImplement();
-                Console.WriteLine($"Sem suporte para leitura em {address:4X}");
+                Console.WriteLine($"Sem suporte para leitura em {address:2X}");
 
             }
             else if (address < 0xFF00)
@@ -87,7 +87,7 @@ namespace EmuladorGBA.Business
                 // IO Registers
                 // TODO
                 ConsoleUtil.ShowMensagemNotImplement();
-                Console.WriteLine($"Sem suporte para leitura em {address:4X}");
+                Console.WriteLine($"Sem suporte para leitura em {address:2X}");
             }
             else if (address == 0xFFFF)
             {
