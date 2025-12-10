@@ -334,6 +334,25 @@ namespace EmuladorGBA.Business.Process
 
         #endregion
 
+        #region PROC_AND
+
+        public void PROC_AND()
+        {
+            if (this is Cpu cpu)
+            {
+                byte a = cpu.CpuRegisters.A;
+                a &= (byte)(cpu.FetchedData & 0xFF);
+                    
+                cpu.CpuRegisters.SetRegisterA(a);
+                cpu.CpuSetFlags(z: cpu.CpuRegisters.A == 0 ? 1 : 0, n: 0, h: 1, c: 0);
+                return;
+            }
+
+            throw ExceptionsUtil.NotSupportedCpu();
+        }
+
+        #endregion
+
         #region PROC DI
 
         internal void PROC_DI()
