@@ -30,6 +30,7 @@ namespace EmuladorGBA.Business.Process.Load
             cpu.Processors[(short)InType.IN_ADC] = cpu.PROC_ADC;
             cpu.Processors[(short)InType.IN_SUB] = cpu.PROC_SUB;
             cpu.Processors[(short)InType.IN_SBC] = cpu.PROC_SBC;
+            cpu.Processors[(short)InType.IN_OR] = cpu.PROC_OR;
             cpu.Processors[(short)InType.IN_XOR] = cpu.PROC_XOR;
 
             cpu.Processors[(short)InType.IN_CPL] = cpu.PROC_CPL;

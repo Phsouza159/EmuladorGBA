@@ -64,7 +64,7 @@ namespace EmuladorGBA.Business.Process
 
             if (proc is null)
             {
-                Console.WriteLine($" - PROCESSO não implementado em: {this.Instruction.Type}");
+                throw new ArgumentException($" - PROCESSO não implementado em: {this.Instruction.Type}");
                 return;
             }
 
@@ -292,6 +292,25 @@ namespace EmuladorGBA.Business.Process
 
                 this.Cycles(1);
 
+                return;
+            }
+
+            throw ExceptionsUtil.NotSupportedCpu();
+        }
+
+        #endregion
+
+        #region  PROC_OR
+
+        public void PROC_OR()
+        {
+            if(this is Cpu cpu)
+            {
+                byte a = cpu.CpuRegisters.A;
+                a |= (byte)(cpu.FetchedData & 0xFF);
+
+                cpu.CpuRegisters.SetRegisterA(a);
+                cpu.CpuSetFlags(z : cpu.CpuRegisters.A == 0 ? 1 : 0, n : 0, h : 0, c : 0);
                 return;
             }
 
